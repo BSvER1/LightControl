@@ -2,7 +2,10 @@
 public class Driver {
 
 	public static void main(String[] args) {
-		LaunchpadDriver lpd = new LaunchpadDriver();
+		
+		new LightControlWindow();
+		
+		//LaunchpadDriver lpd = new LaunchpadDriver();
 
 	}
 

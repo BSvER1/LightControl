@@ -6,6 +6,7 @@ import net.thecodersbreakfast.lp4j.api.Color;
 import net.thecodersbreakfast.lp4j.api.LaunchpadClient;
 import net.thecodersbreakfast.lp4j.api.LaunchpadListener;
 import net.thecodersbreakfast.lp4j.api.Pad;
+import net.thecodersbreakfast.lp4j.api.ScrollSpeed;
 
 
 public class MyLaunchpadListener implements LaunchpadListener {
@@ -18,6 +19,7 @@ public class MyLaunchpadListener implements LaunchpadListener {
 	
 	@Override
 	public void onPadPressed(Pad pad, long timestamp) {
+		System.out.println("Received pad press: "+pad.toString());
 		client.setPadLight(pad, Color.GREEN, BackBufferOperation.NONE);
 		
 	}
@@ -30,9 +32,19 @@ public class MyLaunchpadListener implements LaunchpadListener {
 
 	@Override
 	public void onButtonPressed(Button button, long timestamp) {
-		if (button == Button.MIXER) {
-			shutdownLaunchpad();
-		} else {
+		//System.out.println("Received button press: "+button.name());
+		
+		if (button == Button.UP){
+			TimingsThread.increaseBPM();
+		} else if (button == Button.DOWN) {
+			TimingsThread.decreaseBPM();
+		} else if (button == Button.VOL) {
+			TimingsThread.setOffset();
+		} else if (button == Button.SESSION) {
+			TimingsThread.tapToBPM();
+		}
+		
+		else {
 			client.setButtonLight(button, Color.RED, BackBufferOperation.NONE);
 		}
 		
@@ -40,7 +52,13 @@ public class MyLaunchpadListener implements LaunchpadListener {
 
 	@Override
 	public void onButtonReleased(Button button, long timestamp) {
-		client.setButtonLight(button, Color.BLACK, BackBufferOperation.NONE);
+		
+		if (button != Button.UP && button != Button.DOWN
+				&& button != Button.VOL && button != Button.SESSION && button != Button.PAN
+				&& button != Button.SND_A && button != Button.SND_B) {
+		
+			client.setButtonLight(button, Color.BLACK, BackBufferOperation.NONE);
+		}
 		
 	}
 
@@ -51,17 +69,25 @@ public class MyLaunchpadListener implements LaunchpadListener {
 	}
 	
 	public void shutdownLaunchpad() {
-		
 		System.out.println("Shutting down...");
+		
+		System.out.println("Terminating threads...");
+        TimingsThread.setRunning(false);
+        
         System.out.println("Resetting launchpad...");
-        client.reset();
+        try {
+        	client.reset();
+        } catch (NullPointerException ex) {
+        	
+        }
+        
         System.out.println("Closing launchpad...");
         try {
 			LaunchpadDriver.launchpad.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		} 
+        
         System.out.println("...done");
 	}
 

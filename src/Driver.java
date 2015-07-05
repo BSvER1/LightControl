@@ -5,7 +5,7 @@ public class Driver {
 		
 		new LightControlWindow();
 		
-		//LaunchpadDriver lpd = new LaunchpadDriver();
+		//LaunchpadDriver lpd = new LaunchpadDriver(); // now called by LightControlWindow
 
 	}
 

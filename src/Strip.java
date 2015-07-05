@@ -37,8 +37,6 @@ public class Strip extends Edge {
 		value[BLUE] = 0;
 	}
 	
-	
-	
 	public Color getStripColor() {
 		return new Color(value[RED], value[GREEN], value[BLUE]);
 	}

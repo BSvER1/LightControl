@@ -51,7 +51,8 @@ public class LightControlWindow {
 	public static LightDataCenter light;
 	
 	int numButtonColumns = 32;
-	int numStrips = 55;
+	int maxNumStrips = 55;
+	int numStrips = 0;
 	
 	InstallationPreviewWindow previewCanvas;
 
@@ -259,250 +260,12 @@ public class LightControlWindow {
 		sequencePanel.setBackground(UIManager.getColor("Panel.background"));
 		sequenceViewTab.setColumnHeaderView(sequencePanel);
 		
-		//build column format string
-		String col = "[30px:n:30px][50px:n:50px,center][150px:n:150px,fill]";
-		for (int i = 0; i < numButtonColumns; i++) {
-			col = col.concat("[30px:n:30px,fill]");
-		}
-		col = col.concat("[400px:n:1600px,grow]");
-		
-		//build row format string
-		String row = "";
-		for (int i = 0; i < numStrips; i++) {
-			row = row.concat("[30px:n]");
-		}
-		
-		sequencePanel.setLayout(new MigLayout("", col, row));
+		setSequencePanelLayout();
 		
 		btnNewStrip = new JButton("New Strip");
 		sequencePanel.add(btnNewStrip, "cell 2 0,grow");
 		
 		addColourPalette();
-		
-//		colorToggleBlack = new JToggleButton("");
-//		colorToggleBlack.setBackground(new Color(0, 0, 0));
-//		colorToggleBlack.setOpaque(true);
-//		colorToggleBlack.setBorderPainted(false);
-//		colorToggleBlack.setMaximumSize(new Dimension(25, 25));
-//		sequencePanel.add(colorToggleBlack, "cell 3 0,alignx center,aligny center");
-		
-		//TODO
-//		JToggleButton colorToggleWhite = new JToggleButton("");
-//		colorToggleWhite.setOpaque(true);
-//		colorToggleWhite.setMaximumSize(new Dimension(25, 25));
-//		colorToggleWhite.setBorderPainted(false);
-//		colorToggleWhite.setBackground(new Color(255, 255, 255));
-//		sequencePanel.add(colorToggleWhite, "cell 4 0,alignx center,aligny center");
-//		
-//		JToggleButton colorToggleRed1 = new JToggleButton("");
-//		colorToggleRed1.setOpaque(true);
-//		colorToggleRed1.setMaximumSize(new Dimension(25, 25));
-//		colorToggleRed1.setBorderPainted(false);
-//		colorToggleRed1.setBackground(new Color(153, 0, 51));
-//		sequencePanel.add(colorToggleRed1, "cell 5 0,alignx center,aligny center");
-//		
-//		JToggleButton colorToggleRed2 = new JToggleButton("");
-//		colorToggleRed2.setOpaque(true);
-//		colorToggleRed2.setMaximumSize(new Dimension(25, 25));
-//		colorToggleRed2.setBorderPainted(false);
-//		colorToggleRed2.setBackground(new Color(204, 0, 51));
-//		sequencePanel.add(colorToggleRed2, "cell 6 0,alignx center,aligny center");
-//		
-//		JToggleButton colorToggleRed3 = new JToggleButton("");
-//		colorToggleRed3.setOpaque(true);
-//		colorToggleRed3.setMaximumSize(new Dimension(25, 25));
-//		colorToggleRed3.setBorderPainted(false);
-//		colorToggleRed3.setBackground(new Color(255, 51, 0));
-//		sequencePanel.add(colorToggleRed3, "cell 7 0,alignx center,aligny center");
-//		
-//		JToggleButton toggleButton = new JToggleButton("");
-//		toggleButton.setOpaque(true);
-//		toggleButton.setMaximumSize(new Dimension(25, 25));
-//		toggleButton.setBorderPainted(false);
-//		toggleButton.setBackground(new Color(255, 102, 0));
-//		sequencePanel.add(toggleButton, "cell 8 0,alignx center,aligny center");
-//		
-//		JToggleButton toggleButton_1 = new JToggleButton("");
-//		toggleButton_1.setOpaque(true);
-//		toggleButton_1.setMaximumSize(new Dimension(25, 25));
-//		toggleButton_1.setBorderPainted(false);
-//		toggleButton_1.setBackground(new Color(255, 153, 0));
-//		sequencePanel.add(toggleButton_1, "cell 9 0,alignx center,aligny center");
-//		
-//		JToggleButton toggleButton_5 = new JToggleButton("");
-//		toggleButton_5.setOpaque(true);
-//		toggleButton_5.setMaximumSize(new Dimension(25, 25));
-//		toggleButton_5.setBorderPainted(false);
-//		toggleButton_5.setBackground(new Color(255, 204, 0));
-//		sequencePanel.add(toggleButton_5, "cell 10 0,alignx center,aligny center");
-//		
-//		JToggleButton toggleButton_6 = new JToggleButton("");
-//		toggleButton_6.setOpaque(true);
-//		toggleButton_6.setMaximumSize(new Dimension(25, 25));
-//		toggleButton_6.setBorderPainted(false);
-//		toggleButton_6.setBackground(new Color(255, 255, 0));
-//		sequencePanel.add(toggleButton_6, "cell 11 0,alignx center,aligny center");
-//		
-//		JToggleButton toggleButton_7 = new JToggleButton("");
-//		toggleButton_7.setOpaque(true);
-//		toggleButton_7.setMaximumSize(new Dimension(25, 25));
-//		toggleButton_7.setBorderPainted(false);
-//		toggleButton_7.setBackground(new Color(255, 255, 153));
-//		sequencePanel.add(toggleButton_7, "cell 12 0,alignx center,aligny center");
-//		
-//		JToggleButton toggleButton_8 = new JToggleButton("");
-//		toggleButton_8.setOpaque(true);
-//		toggleButton_8.setMaximumSize(new Dimension(25, 25));
-//		toggleButton_8.setBorderPainted(false);
-//		toggleButton_8.setBackground(new Color(204, 255, 204));
-//		sequencePanel.add(toggleButton_8, "cell 13 0,alignx center,aligny center");
-//		
-//		JToggleButton toggleButton_9 = new JToggleButton("");
-//		toggleButton_9.setOpaque(true);
-//		toggleButton_9.setMaximumSize(new Dimension(25, 25));
-//		toggleButton_9.setBorderPainted(false);
-//		toggleButton_9.setBackground(new Color(153, 255, 153));
-//		sequencePanel.add(toggleButton_9, "cell 14 0,alignx center,aligny center");
-//		
-//		JToggleButton toggleButton_10 = new JToggleButton("");
-//		toggleButton_10.setOpaque(true);
-//		toggleButton_10.setMaximumSize(new Dimension(25, 25));
-//		toggleButton_10.setBorderPainted(false);
-//		toggleButton_10.setBackground(new Color(51, 255, 102));
-//		sequencePanel.add(toggleButton_10, "cell 15 0,alignx center,aligny center");
-//		
-//		JToggleButton toggleButton_11 = new JToggleButton("");
-//		toggleButton_11.setOpaque(true);
-//		toggleButton_11.setMaximumSize(new Dimension(25, 25));
-//		toggleButton_11.setBorderPainted(false);
-//		toggleButton_11.setBackground(new Color(0, 255, 51));
-//		sequencePanel.add(toggleButton_11, "cell 16 0,alignx center,aligny center");
-//		
-//		JToggleButton toggleButton_12 = new JToggleButton("");
-//		toggleButton_12.setOpaque(true);
-//		toggleButton_12.setMaximumSize(new Dimension(25, 25));
-//		toggleButton_12.setBorderPainted(false);
-//		toggleButton_12.setBackground(new Color(0, 204, 0));
-//		sequencePanel.add(toggleButton_12, "cell 17 0,alignx center,aligny center");
-//		
-//		JToggleButton toggleButton_13 = new JToggleButton("");
-//		toggleButton_13.setOpaque(true);
-//		toggleButton_13.setMaximumSize(new Dimension(25, 25));
-//		toggleButton_13.setBorderPainted(false);
-//		toggleButton_13.setBackground(new Color(0, 153, 0));
-//		sequencePanel.add(toggleButton_13, "cell 18 0,alignx center,aligny center");
-//		
-//		JToggleButton toggleButton_14 = new JToggleButton("");
-//		toggleButton_14.setOpaque(true);
-//		toggleButton_14.setMaximumSize(new Dimension(25, 25));
-//		toggleButton_14.setBorderPainted(false);
-//		toggleButton_14.setBackground(new Color(0, 153, 102));
-//		sequencePanel.add(toggleButton_14, "cell 19 0,alignx center,aligny center");
-//		
-//		JToggleButton toggleButton_15 = new JToggleButton("");
-//		toggleButton_15.setOpaque(true);
-//		toggleButton_15.setMaximumSize(new Dimension(25, 25));
-//		toggleButton_15.setBorderPainted(false);
-//		toggleButton_15.setBackground(new Color(0, 102, 153));
-//		sequencePanel.add(toggleButton_15, "cell 20 0,alignx center,aligny center");
-//		
-//		JToggleButton toggleButton_16 = new JToggleButton("");
-//		toggleButton_16.setOpaque(true);
-//		toggleButton_16.setMaximumSize(new Dimension(25, 25));
-//		toggleButton_16.setBorderPainted(false);
-//		toggleButton_16.setBackground(new Color(0, 51, 153));
-//		sequencePanel.add(toggleButton_16, "cell 21 0,alignx center,aligny center");
-//		
-//		JToggleButton toggleButton_17 = new JToggleButton("");
-//		toggleButton_17.setOpaque(true);
-//		toggleButton_17.setMaximumSize(new Dimension(25, 25));
-//		toggleButton_17.setBorderPainted(false);
-//		toggleButton_17.setBackground(new Color(0, 0, 255));
-//		sequencePanel.add(toggleButton_17, "cell 22 0,alignx center,aligny center");
-//		
-//		JToggleButton toggleButton_18 = new JToggleButton("");
-//		toggleButton_18.setOpaque(true);
-//		toggleButton_18.setMaximumSize(new Dimension(25, 25));
-//		toggleButton_18.setBorderPainted(false);
-//		toggleButton_18.setBackground(new Color(0, 153, 255));
-//		sequencePanel.add(toggleButton_18, "cell 23 0,alignx center,aligny center");
-//		
-//		JToggleButton toggleButton_19 = new JToggleButton("");
-//		toggleButton_19.setOpaque(true);
-//		toggleButton_19.setMaximumSize(new Dimension(25, 25));
-//		toggleButton_19.setBorderPainted(false);
-//		toggleButton_19.setBackground(new Color(0, 204, 255));
-//		sequencePanel.add(toggleButton_19, "cell 24 0,alignx center,aligny center");
-//		
-//		JToggleButton toggleButton_20 = new JToggleButton("");
-//		toggleButton_20.setOpaque(true);
-//		toggleButton_20.setMaximumSize(new Dimension(25, 25));
-//		toggleButton_20.setBorderPainted(false);
-//		toggleButton_20.setBackground(new Color(0, 255, 255));
-//		sequencePanel.add(toggleButton_20, "cell 25 0,alignx center,aligny center");
-//		
-//		JToggleButton toggleButton_21 = new JToggleButton("");
-//		toggleButton_21.setOpaque(true);
-//		toggleButton_21.setMaximumSize(new Dimension(25, 25));
-//		toggleButton_21.setBorderPainted(false);
-//		toggleButton_21.setBackground(new Color(204, 204, 255));
-//		sequencePanel.add(toggleButton_21, "cell 26 0,alignx center,aligny center");
-//		
-//		JToggleButton toggleButton_22 = new JToggleButton("");
-//		toggleButton_22.setOpaque(true);
-//		toggleButton_22.setMaximumSize(new Dimension(25, 25));
-//		toggleButton_22.setBorderPainted(false);
-//		toggleButton_22.setBackground(new Color(204, 153, 255));
-//		sequencePanel.add(toggleButton_22, "cell 27 0,alignx center,aligny center");
-//		
-//		JToggleButton toggleButton_23 = new JToggleButton("");
-//		toggleButton_23.setOpaque(true);
-//		toggleButton_23.setMaximumSize(new Dimension(25, 25));
-//		toggleButton_23.setBorderPainted(false);
-//		toggleButton_23.setBackground(new Color(204, 102, 255));
-//		sequencePanel.add(toggleButton_23, "cell 28 0,alignx center,aligny center");
-//		
-//		JToggleButton toggleButton_24 = new JToggleButton("");
-//		toggleButton_24.setOpaque(true);
-//		toggleButton_24.setMaximumSize(new Dimension(25, 25));
-//		toggleButton_24.setBorderPainted(false);
-//		toggleButton_24.setBackground(new Color(204, 0, 255));
-//		sequencePanel.add(toggleButton_24, "cell 29 0,alignx center,aligny center");
-//		
-//		JToggleButton toggleButton_25 = new JToggleButton("");
-//		toggleButton_25.setOpaque(true);
-//		toggleButton_25.setMaximumSize(new Dimension(25, 25));
-//		toggleButton_25.setBorderPainted(false);
-//		toggleButton_25.setBackground(new Color(204, 51, 204));
-//		sequencePanel.add(toggleButton_25, "cell 30 0,alignx center,aligny center");
-//		
-//		JToggleButton toggleButton_26 = new JToggleButton("");
-//		toggleButton_26.setOpaque(true);
-//		toggleButton_26.setMaximumSize(new Dimension(25, 25));
-//		toggleButton_26.setBorderPainted(false);
-//		toggleButton_26.setBackground(new Color(255, 51, 255));
-//		sequencePanel.add(toggleButton_26, "cell 31 0,alignx center,aligny center");
-//		
-//		JToggleButton toggleButton_27 = new JToggleButton("");
-//		toggleButton_27.setOpaque(true);
-//		toggleButton_27.setMaximumSize(new Dimension(25, 25));
-//		toggleButton_27.setBorderPainted(false);
-//		toggleButton_27.setBackground(new Color(255, 102, 255));
-//		sequencePanel.add(toggleButton_27, "cell 32 0,alignx center,aligny center");
-//		
-//		JToggleButton toggleButton_28 = new JToggleButton("");
-//		toggleButton_28.setOpaque(true);
-//		toggleButton_28.setMaximumSize(new Dimension(25, 25));
-//		toggleButton_28.setBorderPainted(false);
-//		toggleButton_28.setBackground(new Color(153, 51, 204));
-//		sequencePanel.add(toggleButton_28, "cell 33 0,alignx center,aligny center");
-//		
-//		JToggleButton toggleButton_29 = new JToggleButton("");
-//		toggleButton_29.setOpaque(true);
-//		toggleButton_29.setMaximumSize(new Dimension(25, 25));
-//		toggleButton_29.setBorderPainted(false);
-//		toggleButton_29.setBackground(new Color(153, 0, 153));
-//		sequencePanel.add(toggleButton_29, "cell 34 0,alignx center,aligny center");
 		
 		deleteStripButton = new JButton("");
 		deleteStripButton.setFont(new Font("Lucida Grande", Font.PLAIN, 5));
@@ -596,23 +359,7 @@ public class LightControlWindow {
 		eighth = new JMenuItem("1/8");
 		sixteenth = new JMenuItem("1/16");
 
-		about = new JMenuItem("About LightControl");
-		about.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				JOptionPane.showMessageDialog(frame,
-						"LightControl version " + version + "\n"
-								+ "This application is designed to create sequences of events for playback on DMX\n"
-								+ "lighting installations.\n"
-								+ "It uses the LP4J library by Olivier Croisier (olivier.croisier@gmail.com)\n"
-								+ "to interface with a Launchpad to create a simple and easy to use control scheme.\n"
-								+ "Display Layout created using JGoodies and MigLayout and Eclipse WindowBuilder toolkit.\n\n"
-								+ "Software written by Brendon Veronese (bsver1@hotmail.com). \n"
-								+ "Hardware designed and built by James Newlands.",
-								"About LightControl",
-								JOptionPane.PLAIN_MESSAGE);
-			}
-		});
+		createAboutDialog();
 
 		file.add(newSeq);
 		file.add(openSeq);
@@ -647,6 +394,43 @@ public class LightControlWindow {
 		menuBar.add(help);
 
 		frame.setJMenuBar(menuBar);
+	}
+	
+	public void setSequencePanelLayout() {
+		//build column format string
+		String col = "[30px:n:30px][50px:n:50px,center][150px:n:150px,fill]";
+		for (int i = 0; i < numButtonColumns; i++) {
+			col = col.concat("[30px:n:30px,fill]");
+		}
+		col = col.concat("[400px:n:1600px,grow]");
+
+		//build row format string
+		String row = "";
+		for (int i = 0; i < maxNumStrips; i++) {
+			row = row.concat("[30px:n]");
+		}
+
+		sequencePanel.setLayout(new MigLayout("", col, row));
+	}
+	
+	public void createAboutDialog() {
+		about = new JMenuItem("About LightControl");
+		about.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				JOptionPane.showMessageDialog(frame,
+						"LightControl version " + version + "\n"
+								+ "This application is designed to create sequences of events for playback on DMX\n"
+								+ "lighting installations.\n"
+								+ "It uses the LP4J library by Olivier Croisier (olivier.croisier@gmail.com)\n"
+								+ "to interface with a Launchpad to create a simple and easy to use control scheme.\n"
+								+ "Display Layout created using JGoodies and MigLayout and Eclipse WindowBuilder toolkit.\n\n"
+								+ "Software written by Brendon Veronese (bsver1@hotmail.com). \n"
+								+ "Hardware designed and built by James Newlands.",
+								"About LightControl",
+								JOptionPane.PLAIN_MESSAGE);
+			}
+		});
 	}
 	
 	public void addColourPalette() {

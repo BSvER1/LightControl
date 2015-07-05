@@ -14,6 +14,8 @@ public class InstallationPreviewWindow extends Canvas implements Runnable{
 	int numVertexes = 11;
 	
 	double scale;
+	int xOffset = 40;
+	int yOffset = 15;
 	
 	
 	public InstallationPreviewWindow() {
@@ -83,10 +85,10 @@ public class InstallationPreviewWindow extends Canvas implements Runnable{
 		
 		for (int i = 0; i<LightControlWindow.getLightData().getNumStrips(); i++) {
 			g.setColor(LightControlWindow.getLightData().getStrip(i).getStripColor());
-			g.drawLine((int) (LightControlWindow.getLightData().getStrip(i).getStart().getLoc().getX()*scale), 
-					(int) (LightControlWindow.getLightData().getStrip(i).getStart().getLoc().getY()*scale),
-					(int) (LightControlWindow.getLightData().getStrip(i).getStop().getLoc().getX()*scale), 
-					(int) (LightControlWindow.getLightData().getStrip(i).getStop().getLoc().getY()*scale));
+			g.drawLine((int) (LightControlWindow.getLightData().getStrip(i).getStart().getLoc().getX()*scale + xOffset), 
+					(int) (LightControlWindow.getLightData().getStrip(i).getStart().getLoc().getY()*scale + yOffset),
+					(int) (LightControlWindow.getLightData().getStrip(i).getStop().getLoc().getX()*scale + xOffset), 
+					(int) (LightControlWindow.getLightData().getStrip(i).getStop().getLoc().getY()*scale + yOffset));
 		}
 		
 		g.dispose();
@@ -170,8 +172,7 @@ public class InstallationPreviewWindow extends Canvas implements Runnable{
 					tempEdge = new Edge(start, stop);
 					LightControlWindow.getLightData().addStrip(new Strip(tempEdge));
 					
-					System.out.println("Adding strip "+ start.getID() + " to " + +stop.getID());
-					System.out.print("");
+					//System.out.println("Adding strip "+ start.getID() + " to " + +stop.getID());
 				}
 			}
 		}

@@ -3,19 +3,15 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.LinkedList;
 
 import javax.swing.AbstractListModel;
 import javax.swing.BoxLayout;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -28,10 +24,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
-import javax.swing.JToggleButton;
 import javax.swing.ListSelectionModel;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SpringLayout;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -41,18 +34,15 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
-import layout.SpringUtilities;
-
 
 public class LightControlWindow {
 
-	String version = "pre-alpha 0.1";
+	String version = "pre-alpha 0.2";
 	
 	public static LightDataCenter light;
 	
 	int numButtonColumns = 32;
 	int maxNumStrips = 55;
-	int numStrips = 0;
 	
 	InstallationPreviewWindow previewCanvas;
 
@@ -61,12 +51,11 @@ public class LightControlWindow {
 	JSplitPane split_padPreviewRecent, split_recentPreview;
 	JScrollPane recentSequencesListPane, sequenceViewTab;
 	JPanel launchpadViewTab, launchpadPadPanel, recentListPanel, barPreviewPanel, previewPanel;
-	JPanel sequencePanel;
+	static JPanel sequencePanel;
 	
 	JButton[][] launchpadPad;
-	JButton btnPreviewSequence, btnNewStrip, deleteStripButton, btnAddBar;
-	JComboBox<String> stripSelectComboBox;
-	JLabel lblRecentSequences, lblBpm, lblCurrentSequence, lblNextSequence, lblStrip;
+	JButton btnPreviewSequence, btnNewStrip;
+	JLabel lblRecentSequences, lblBpm, lblCurrentSequence, lblNextSequence;
 	JList<String> recentSequencesList;
 	JTextField bpmDisplay, currentSequenceDisplay, nextSequenceDisplay;
 	JMenuBar menuBar;
@@ -77,7 +66,10 @@ public class LightControlWindow {
 	JMenuItem bar, half, quart, eighth, sixteenth;
 	JMenuItem about;
 	
-	JToggleButton[] colorToggle;
+	JButton[] colorToggle;
+	public static Color currentColor;
+	
+	LinkedList<SequenceChannel> channels;
 	
 	Canvas barPreviewCanvas;
 
@@ -90,7 +82,6 @@ public class LightControlWindow {
 				| IllegalAccessException | UnsupportedLookAndFeelException ex) {
 		}
 
-
 		frame = new JFrame("LightControl " + version);
 
 		frame.setResizable(false);
@@ -99,34 +90,29 @@ public class LightControlWindow {
 		frame.addWindowListener( new WindowAdapter() { 
 			@Override
 			public void windowClosing(WindowEvent e) {
-				LaunchpadDriver.getListener().shutdownLaunchpad();
-				InstallationPreviewWindow.setRunning(false);
-				TimingsThread.setRunning(false);
-				System.exit(0);
+				closeLightControl();
 			}});
 		
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
-		
-		frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.X_AXIS));
 		
 		light = new LightDataCenter();
 		
 		addMenuBar();
 		initFrame();
 		
-
-		
-		
 		new LaunchpadDriver();
 		
 		previewCanvas.invalidate();
 		menuBar.invalidate();
-		btnAddBar.invalidate();
 
 	}
 	
+	@SuppressWarnings("serial")
 	public void initFrame() {
+		channels = new LinkedList<SequenceChannel>();
+		
+		frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.X_AXIS));
 		viewTabs = new JTabbedPane(JTabbedPane.TOP);
 		frame.getContentPane().add(viewTabs);
 		
@@ -263,48 +249,16 @@ public class LightControlWindow {
 		setSequencePanelLayout();
 		
 		btnNewStrip = new JButton("New Strip");
+		btnNewStrip.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				addChannelSequence();
+				//System.out.println("Making new strip");
+			}
+		});
 		sequencePanel.add(btnNewStrip, "cell 2 0,grow");
 		
 		addColourPalette();
-		
-		deleteStripButton = new JButton("");
-		deleteStripButton.setFont(new Font("Lucida Grande", Font.PLAIN, 5));
-		deleteStripButton.setForeground(Color.RED);
-		deleteStripButton.setBackground(Color.RED);
-		deleteStripButton.setOpaque(true);
-		deleteStripButton.setBorderPainted(false);
-		deleteStripButton.setMaximumSize(new Dimension(15,15));
-		sequencePanel.add(deleteStripButton, "cell 0 2,alignx center,aligny center");
-		
-		lblStrip = new JLabel("Strip:");
-		sequencePanel.add(lblStrip, "cell 1 2,alignx center,aligny center");
-		
-		stripSelectComboBox = new JComboBox<String>();
-		stripSelectComboBox.setModel(new DefaultComboBoxModel<String>(
-				new String[] {"Unassigned", "Groups", "Outer Ring", "", "Strips", 
-						"1-2", "1-3", "1-4", "1-5", "1-6", "1-7", "1-8", "1-9", 
-						"1-10", "1-11", "2-3", "2-4", "2-5", "2-6", "2-7", "2-8", 
-						"2-9", "2-10", "2-11", "3-4", "3-5", "3-6", "3-7", "3-8", 
-						"3-9", "3-10", "3-11", "4-5", "4-6", "4-7", "4-8", "4-9", 
-						"4-10", "4-11", "5-6", "5-7", "5-8", "5-9", "5-10", "5-11", 
-						"6-7", "6-8", "6-9", "6-10", "6-11", "7-8", "7-9", "7-10", 
-						"7-11", "8-9", "8-10", "8-11", "9-10", "9-11", "10-11"}
-				));
-		stripSelectComboBox.setSelectedIndex(0);
-		//comboBox.setMinimumSize(new Dimension(150, 25));
-		//comboBox.setPreferredSize(comboBox.getMinimumSize());
-		sequencePanel.add(stripSelectComboBox, "flowx,cell 2 2,grow");
-		
-		//TODO
-		JToggleButton patternStartPos = new JToggleButton("");
-		patternStartPos.setOpaque(true);
-		patternStartPos.setMaximumSize(new Dimension(25, 25));
-		patternStartPos.setBorderPainted(false);
-		patternStartPos.setBackground(Color.BLACK);
-		sequencePanel.add(patternStartPos, "cell 3 2,alignx center,aligny center");
-		
-		btnAddBar = new JButton("Add bar");
-		sequencePanel.add(btnAddBar, "cell 19 2");
 		
 	}
 
@@ -327,10 +281,7 @@ public class LightControlWindow {
 		exit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				try {
-					LaunchpadDriver.getListener().shutdownLaunchpad();
-				} catch (NullPointerException ex) {}
-				System.exit(0);
+				closeLightControl();
 			}
 		});
 
@@ -435,21 +386,41 @@ public class LightControlWindow {
 	
 	public void addColourPalette() {
 		String location;
-		colorToggle = new JToggleButton[StripColor.values().length];
+		colorToggle = new JButton[StripColor.values().length];
 		
 		for (int i = 0; i < StripColor.values().length; i++) {
-			colorToggle[i] = new JToggleButton("");
+			colorToggle[i] = new JButton("");
 			colorToggle[i].setBackground(StripColor.values()[i].toColor());
 			colorToggle[i].setOpaque(true);
 			colorToggle[i].setBorderPainted(false);
 			colorToggle[i].setMaximumSize(new Dimension(25, 25));
+			colorToggle[i].addActionListener(new ActionListener() {
+
+				public void actionPerformed(ActionEvent e) {
+					currentColor = ((JButton) e.getSource()).getBackground();
+					//System.out.println("Colour set to " + currentColor.toString());
+				}
+				
+			});
+			
 			location = "cell " + (3+i) + " 0,alignx center,aligny center";
 			sequencePanel.add(colorToggle[i], location);
 		}
 	}
 
 	public void addChannelSequence() {
-		//TODO 
+		channels.addLast(new SequenceChannel(channels.size()));
+		channels.getLast().addBarBtn.revalidate();
+	}
+	
+	public void closeLightControl() {
+		try {
+			LaunchpadDriver.getListener().shutdownLaunchpad();
+		} catch (NullPointerException ex) {}
+		
+		InstallationPreviewWindow.setRunning(false);
+		TimingsThread.setRunning(false);
+		System.exit(0);
 	}
 	
 	public static LightDataCenter getLightData() {

@@ -31,6 +31,18 @@ public class Strip extends Edge {
 		value[BLUE] = blue;
 	}
 	
+	public void setStripColor(StripColor col) {
+		value[RED] = col.getRed();
+		value[GREEN] = col.getGreen();
+		value[BLUE] = col.getBlue();
+	}
+	
+	public void setStripColor(Color col) {
+		value[RED] = col.getRed();
+		value[GREEN] = col.getGreen();
+		value[BLUE] = col.getBlue();
+	}
+	
 	public void setOff() {
 		value[RED] = 0;
 		value[GREEN] = 0;

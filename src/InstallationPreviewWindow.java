@@ -47,6 +47,13 @@ public class InstallationPreviewWindow extends Canvas implements Runnable{
 		double timePerTick = 1000000000/amountOfTicks;
 		double delta = 0;
 		
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		BufferStrategy bs = this.getBufferStrategy();
 		if(bs == null){
 			this.createBufferStrategy(2);

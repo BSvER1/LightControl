@@ -7,11 +7,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.util.LinkedList;
 
 import javax.swing.AbstractListModel;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -37,6 +39,8 @@ import com.jgoodies.forms.layout.RowSpec;
 
 public class LightControlWindow {
 
+	final JFileChooser fc = new JFileChooser();
+	
 	String version = "pre-alpha 0.2";
 	
 	public static LightDataCenter light;
@@ -60,7 +64,7 @@ public class LightControlWindow {
 	JTextField bpmDisplay, currentSequenceDisplay, nextSequenceDisplay;
 	JMenuBar menuBar;
 	JMenu file, edit, view, sequence, quantization, help;
-	JMenuItem newSeq, openSeq, saveSeq, exit;
+	JMenuItem newSeq, openSeq, saveSeq, importSeq, exit;
 	JMenuItem undo, redo;
 	JMenuItem addBar, removeBar, addChannel;
 	JMenuItem bar, half, quart, eighth, sixteenth;
@@ -110,6 +114,7 @@ public class LightControlWindow {
 	
 	@SuppressWarnings("serial")
 	public void initFrame() {
+		
 		channels = new LinkedList<SequenceChannel>();
 		
 		frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.X_AXIS));
@@ -275,8 +280,43 @@ public class LightControlWindow {
 
 		newSeq = new JMenuItem("New Sequence");
 		openSeq = new JMenuItem("Open Sequence");
+		openSeq.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int returnVal = fc.showOpenDialog(openSeq);
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+		            File file = fc.getSelectedFile();
+		            //TODO
+		            System.out.println("Selected "+ file.getAbsolutePath());
+				}	
+			}
+		});
 		saveSeq = new JMenuItem("Save Sequence");
+		saveSeq.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int returnVal = fc.showSaveDialog(saveSeq);
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+		            File file = fc.getSelectedFile();
+		            //TODO
+		            System.out.println("Selected "+ file.getAbsolutePath());
+				}	
+			}
+		});
 		saveSeq.setEnabled(false);
+		importSeq = new JMenuItem("Import Sequences from Directory");
+		importSeq.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int returnVal = fc.showOpenDialog(importSeq);
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+		            File file = fc.getSelectedFile();
+		            //TODO
+		            System.out.println("Selected "+ file.getAbsolutePath());
+				}
+				
+			}
+		});
 		exit = new JMenuItem("Exit");
 		exit.addActionListener(new ActionListener() {
 			@Override

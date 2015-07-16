@@ -17,5 +17,8 @@
 	<classpathentry kind="lib" path="jgoodies-validation-2.5.1-sources.jar"/>
 	<classpathentry kind="lib" path="jgoodies-validation-2.5.1.jar"/>
 	<classpathentry kind="lib" path="miglayout-src.zip"/>
+	<classpathentry kind="lib" path="jssc-2.8.0-javadoc.jar"/>
+	<classpathentry kind="lib" path="jssc.jar" sourcepath="jssc-2.8.0-src.jar"/>
+	<classpathentry kind="lib" path="jssc-2.8.0-src.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

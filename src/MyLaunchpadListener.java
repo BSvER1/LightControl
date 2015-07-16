@@ -22,7 +22,7 @@ public class MyLaunchpadListener implements LaunchpadListener {
 		System.out.println("Received pad press: "+pad.toString());
 		client.setPadLight(pad, Color.GREEN, BackBufferOperation.NONE);
 		
-		if (pad == Pad.at(0, 0)) LightControlWindow.getLightData().getStrip("1-6").setStripColor(127, 127, 127);
+		if (pad == Pad.at(0, 0)) LightControlWindow.getLightData().getStrip("1-6").setStripColor(StripColor.LIGHT_ORANGE.toColor());
 		
 	}
 

@@ -1,4 +1,11 @@
 
+
+
+/**
+ * @deprecated
+ * @author BSvER1
+ *
+ */
 public enum StripSequence {
 	
 	PinWheel3(new String[] {"3-11", "3-9", "3-7", "3-5"}),

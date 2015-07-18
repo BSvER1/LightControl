@@ -5,6 +5,7 @@ import java.awt.Color;
 
 public enum StripColor {
 	
+	DONT_UPDATE(129,129,129),
 	OFF(0,0,0),
 	WHITE(255,255,255),
 	DEEP_RED(153,0,51),

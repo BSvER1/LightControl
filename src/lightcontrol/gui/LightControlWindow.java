@@ -12,10 +12,11 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
-import javax.swing.AbstractListModel;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -40,6 +41,8 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
 import lightcontrol.control.LaunchpadDriver;
+import lightcontrol.control.LightControlSequence;
+import lightcontrol.control.LightControlSequenceList;
 import lightcontrol.enums.StripColor;
 import lightcontrol.gui.constructs.LightControlFileFilter;
 import lightcontrol.gui.preview.InstallationPreviewWindow;
@@ -73,6 +76,7 @@ public class LightControlWindow {
 	JButton btnPreviewSequence, btnNewStrip;
 	JLabel lblRecentSequences, lblBpm, lblCurrentSequence, lblNextSequence;
 	JList<String> recentSequencesList;
+	DefaultListModel<String> recentSequences;
 	public static JTextField bpmDisplay;
 	JTextField currentSequenceDisplay, nextSequenceDisplay;
 	JMenuBar menuBar;
@@ -86,7 +90,8 @@ public class LightControlWindow {
 	JButton[] colorToggle;
 	public static Color currentColor = StripColor.OFF.toColor();
 
-	LinkedList<SequenceChannel> channels;
+	LinkedList<SequenceChannel> sequenceViewChannels; // buttons/methods for creating and editing sequences
+	LightControlSequenceList performanceSequences; 
 
 	Canvas barPreviewCanvas;
 
@@ -112,6 +117,8 @@ public class LightControlWindow {
 
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
+		
+		performanceSequences = new LightControlSequenceList();
 
 		light = new LightDataCenter();
 
@@ -125,10 +132,9 @@ public class LightControlWindow {
 
 	}
 
-	@SuppressWarnings("serial")
 	public void initFrame() {
 
-		channels = new LinkedList<SequenceChannel>();
+		sequenceViewChannels = new LinkedList<SequenceChannel>();
 
 		frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.X_AXIS));
 		viewTabs = new JTabbedPane(JTabbedPane.TOP);
@@ -195,6 +201,13 @@ public class LightControlWindow {
 		recentListPanel.add(lblRecentSequences, "cell 0 0,alignx left,aligny center");
 
 		btnPreviewSequence = new JButton("Preview Sequence");
+		btnPreviewSequence.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				previewCanvas.setCurrentPreview(performanceSequences.getSequence(recentSequencesList.getSelectedValue()));
+				
+			}
+		});
 		recentListPanel.add(btnPreviewSequence, "cell 2 0,alignx right,growy");
 
 		recentSequencesListPane = new JScrollPane();
@@ -202,15 +215,8 @@ public class LightControlWindow {
 
 		recentSequencesList = new JList<String>();
 		recentSequencesListPane.setViewportView(recentSequencesList);
-		recentSequencesList.setModel(new AbstractListModel<String>() { //TODO
-			String[] values = new String[] {"Test1", "Spiral", "Test2", "Test3", "Test4", "Test5", "Test6", "Test7", "Test8", "Test9"};
-			public int getSize() {
-				return values.length;
-			}
-			public String getElementAt(int index) {
-				return values[index];
-			}
-		});
+		recentSequences = new DefaultListModel<String>();
+		recentSequencesList.setModel(recentSequences);
 		recentSequencesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 		lblBpm = new JLabel("BPM: ");
@@ -289,11 +295,12 @@ public class LightControlWindow {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (!channels.isEmpty()) {
+				if (!sequenceViewChannels.isEmpty()) {
 					int dialogResult = JOptionPane.showConfirmDialog((Component) null, 
 							"Are you sure you want a new sequence?\nPressing OK will result in all unsaved changes being lost.",
 							"New Sequence", JOptionPane.OK_CANCEL_OPTION);
 					if (dialogResult == 0) {
+						sequenceViewChannels = new LinkedList<SequenceChannel>();
 						resetSequencePanel();
 					}
 				}
@@ -305,7 +312,7 @@ public class LightControlWindow {
 		openSeq.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (!channels.isEmpty()) {
+				if (!sequenceViewChannels.isEmpty()) {
 					int dialogResult = JOptionPane.showConfirmDialog((Component) null, 
 							"Are you sure you want to open a new sequence?\nPressing OK will result in all unsaved changes being lost.",
 							"Open Sequence", JOptionPane.OK_CANCEL_OPTION);
@@ -321,8 +328,8 @@ public class LightControlWindow {
 						return;
 					}
 					System.out.println("Selected "+ file.getAbsolutePath());
-					//TODO load file
-					
+					performanceSequences.add(new LightControlSequence(file));
+					recentSequences.addElement(performanceSequences.get(performanceSequences.size()-1).getFriendlyName());
 				}	
 			}
 		});
@@ -331,7 +338,7 @@ public class LightControlWindow {
 		saveSeq.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (channels.isEmpty()) {
+				if (sequenceViewChannels.isEmpty()) {
 					JOptionPane.showMessageDialog((Component) null, "There is nothing to save!");
 				} else {
 
@@ -360,7 +367,6 @@ public class LightControlWindow {
 				}
 			}
 		});
-		saveSeq.setEnabled(true);
 		
 		importSeq = new JMenuItem("Import Sequences from Directory");
 		importSeq.addActionListener(new ActionListener() {
@@ -536,18 +542,18 @@ public class LightControlWindow {
 	}
 
 	public void addChannelSequence() {
-		if (channels.size() == maxNumStrips-1) {
+		if (sequenceViewChannels.size() == maxNumStrips-1) {
 			btnNewStrip.setEnabled(false);
 		}
 
-		channels.addLast(new SequenceChannel(channels.size()));
-		channels.getLast().addBarBtn.revalidate();
+		sequenceViewChannels.addLast(new SequenceChannel(sequenceViewChannels.size()));
+		sequenceViewChannels.getLast().addBarBtn.revalidate();
 	}
 
 	public String exportSequence() {
 		String sequence = "";
-		for (int i = 0; i < channels.size(); i++) {
-			sequence = sequence.concat(channels.get(i).exportChannel());
+		for (int i = 0; i < sequenceViewChannels.size(); i++) {
+			sequence = sequence.concat(sequenceViewChannels.get(i).exportChannel());
 		}
 		//sequence = sequence.concat("//end of file");
 		return sequence;

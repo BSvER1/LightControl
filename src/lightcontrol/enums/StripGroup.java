@@ -101,7 +101,7 @@ public enum StripGroup {
 		return value.length;
 	}
 	
-	public StripGroup getStripGroup(String title) {
+	public static StripGroup getStripGroup(String title) {
 		for (StripGroup str : StripGroup.values()) {
 			if (str.toString().equals(title)) {
 				return str;

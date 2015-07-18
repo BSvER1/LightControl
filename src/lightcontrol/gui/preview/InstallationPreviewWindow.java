@@ -2,10 +2,13 @@ package lightcontrol.gui.preview;
 
 import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 
+import lightcontrol.control.LightControlSequence;
 import lightcontrol.gui.LightControlWindow;
+import lightcontrol.gui.TimingsThread;
 import lightcontrol.gui.preview.constructs.Edge;
 import lightcontrol.gui.preview.constructs.Location;
 import lightcontrol.gui.preview.constructs.Strip;
@@ -25,24 +28,27 @@ public class InstallationPreviewWindow extends Canvas implements Runnable{
 	int xOffset = 40;
 	int yOffset = 15;
 	
+	LightControlSequence currentPreview = null;
+	
 	
 	public InstallationPreviewWindow() {
 		
-		
 		setSize(500,500);
-		scale = (double) 500/275;
+		setMaximumSize(new Dimension(500,500));
+		setMinimumSize(getMaximumSize());
+		setPreferredSize(getMaximumSize());
 		
-		setupStrips();
+		scale = (double) 500/275; //TODO make this dynamic!
 		
-		System.out.println("Starting thread.");
+		setupStrips(); //creates the layout of strips and adds all data into LightDataCenter
+		
+		System.out.println("Starting preview window thread.");
 		
 		//start thread
 		lightUpdater = new Thread(this);
 		lightUpdater.setName("Preview Updater");
 		running = true;
 		lightUpdater.start();
-		
-		System.out.println("Thread started.");
 		
 		invalidate();
 	}
@@ -97,6 +103,12 @@ public class InstallationPreviewWindow extends Canvas implements Runnable{
 		Graphics g = bs.getDrawGraphics();
 		g.setColor(Color.BLACK); 
 		g.fillRect(0, 0, (int) getBounds().getWidth(), (int) getBounds().getHeight());
+		
+		//update light data for current sequence then display it
+		if (currentPreview !=null) {
+			currentPreview.preview(TimingsThread.currentEighth + TimingsThread.currentBar*16);
+			//System.out.println(TimingsThread.currentEighth + TimingsThread.currentBar*16);
+		}
 		
 		for (int i = 0; i<LightControlWindow.getLightData().getNumStrips(); i++) {
 			g.setColor(LightControlWindow.getLightData().getStrip(i).getStripColor());
@@ -193,6 +205,10 @@ public class InstallationPreviewWindow extends Canvas implements Runnable{
 		}
 		
 		
+	}
+	
+	public void setCurrentPreview(LightControlSequence currentPreview) {
+		this.currentPreview = currentPreview;
 	}
 	
 	public static void setRunning(boolean newRunning) {

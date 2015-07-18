@@ -1,6 +1,7 @@
 package lightcontrol.control.launchpad;
 
 import java.io.IOException;
+import java.util.Random;
 
 import lightcontrol.control.LaunchpadDriver;
 import lightcontrol.enums.StripColor;
@@ -17,9 +18,14 @@ import net.thecodersbreakfast.lp4j.api.Pad;
 public class MyLaunchpadListener implements LaunchpadListener {
 
 	LaunchpadClient client;
+	Random r;
+	int start;
+	int stop;
+	String stripString;
 	
 	public MyLaunchpadListener(LaunchpadClient client) {
 		this.client = client; 
+		r = new Random();
 	}
 	
 	@Override
@@ -27,7 +33,16 @@ public class MyLaunchpadListener implements LaunchpadListener {
 		System.out.println("Received pad press: "+pad.toString());
 		client.setPadLight(pad, Color.GREEN, BackBufferOperation.NONE);
 		
-		if (pad == Pad.at(0, 0)) LightControlWindow.getLightData().getStrip("1-6").setStripColor(StripColor.LIGHT_ORANGE.toColor());
+		
+		if (pad == Pad.at(0, 0)) { //random strip random color.
+			start = r.nextInt(10)+1;
+			do {
+				stop = r.nextInt(11)+1;
+			} while (start >= stop);
+			stripString = "" + start + "-"+stop;
+			LightControlWindow.getLightData().getStrip(stripString).setStripColor(StripColor.values()[ r.nextInt(StripColor.values().length-1)+1 ]);
+		}
+			
 		
 	}
 
@@ -35,7 +50,7 @@ public class MyLaunchpadListener implements LaunchpadListener {
 	public void onPadReleased(Pad pad, long timestamp) {
 		client.setPadLight(pad, Color.BLACK, BackBufferOperation.NONE);
 		
-		if (pad == Pad.at(0, 0)) LightControlWindow.getLightData().getStrip("1-6").setStripColor(0, 0, 0);
+		if (pad == Pad.at(0, 0)) LightControlWindow.getLightData().getStrip(stripString).setStripColor(0, 0, 0);
 	}
 
 	@Override

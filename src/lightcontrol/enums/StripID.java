@@ -1,5 +1,6 @@
 package lightcontrol.enums;
 
+import java.util.Random;
 
 public enum StripID {
 	
@@ -127,11 +128,22 @@ public enum StripID {
 		this.rgbStartChannel = strip.rgbStartChannel;
 	}
 	
+	public static StripID getRandom() {
+		Random r = new Random();
+		int start = r.nextInt(11)+1;
+		int stop;
+		do {
+			stop = r.nextInt(11)+1;
+		} while(start == stop);
+		
+		return getStrip(start, stop);
+	}
+	
 	public String getValue() {
 		return value;
 	}
 	
-	public StripID getStrip(int start, int stop) {
+	public static StripID getStrip(int start, int stop) {
 		String temp;
 
 		if (start < stop)
@@ -146,7 +158,7 @@ public enum StripID {
 		return null;
 	}
 	
-	public StripID[] getStrip(String value) {
+	public static StripID[] getStrip(String value) {
 		for (StripID str : StripID.values()) {
 			if (str.toString().equals(value)) {
 				return new StripID[] {str};

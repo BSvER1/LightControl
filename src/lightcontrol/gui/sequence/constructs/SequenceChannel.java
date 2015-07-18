@@ -59,8 +59,8 @@ public class SequenceChannel {
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
 					//TODO
-					if (StripGroup.ALL_STRIPS.getStripGroup(stripSelectComboBox.getSelectedItem().toString()) != null) {
-						hardwareChannel = StripGroup.ALL_STRIPS.getStripGroup(stripSelectComboBox.getSelectedItem().toString()).getStrips();
+					if (StripGroup.getStripGroup(stripSelectComboBox.getSelectedItem().toString()) != null) {
+						hardwareChannel = StripGroup.getStripGroup(stripSelectComboBox.getSelectedItem().toString()).getStrips();
 					} else if (StripID.S1_2.getStrip(stripSelectComboBox.getSelectedItem().toString()) != null) {
 						hardwareChannel = StripID.S1_2.getStrip(stripSelectComboBox.getSelectedItem().toString());
 					} else {
@@ -97,10 +97,17 @@ public class SequenceChannel {
 				for (int i = 0; i < sequence.size(); i++) {
 					SequenceChannelBar bar = sequence.get(i);
 					for (int j = 0; j < bar.getNumButtons(); j++) {
-						bar.getBarButtons().get(j).setBackground(StripColor.OFF.toColor());
+						//remove buttons from display
+						bar.getBarButtons().get(j).removeMouseListener(bar.getBarButtons().get(j).getMouseListeners()[0]);
+						LightControlWindow.sequencePanel.remove(bar.getBarButtons().get(j));
 					}
 					
 				}
+				sequence = new LinkedList<SequenceChannelBar>();
+				addBarBtn.removeActionListener(addBarBtn.getActionListeners()[0]);
+				LightControlWindow.sequencePanel.remove(addBarBtn);
+				setupFirstBar();
+				setupAddBarButton();
 				
 			}
 		});
@@ -134,7 +141,6 @@ public class SequenceChannel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				addBar();
-				System.out.println("Need to do this still!");
 			}
 			
 		});
@@ -182,11 +188,11 @@ public class SequenceChannel {
 	
 	public String exportChannel() {
 		if (hardwareChannel.length > 0) {
-			String channel = ""+stripSelectComboBox.getSelectedItem().toString()+"{";
+			String channel = ""+stripSelectComboBox.getSelectedItem().toString()+" ";
 			for (int i = 0; i < hardwareChannel.length-1; i++) {
 				channel = channel.concat(""+hardwareChannel[i]+",");
 			}
-			channel = channel.concat(hardwareChannel[hardwareChannel.length-1]+"}: "); //should only error when there is no channel set. this is what we want.
+			channel = channel.concat(hardwareChannel[hardwareChannel.length-1]+" "); //should only error when there is no channel set. this is what we want.
 			for (int i = 0; i < sequence.size(); i++) {
 				channel = channel.concat(sequence.get(i).exportBar());
 			}

@@ -124,17 +124,18 @@ public class SequenceChannelBar {
 		return null;
 	}
 	
-	
+	//export to a .lcs
 	public String exportBar() {
 		String bar = "";
 		for (int j = 0; j < MAX_SEGMENTS; j++) {
-			bar = bar.concat("["+getColorAtPos(j).getRed()+","+getColorAtPos(j).getGreen()+","+getColorAtPos(j).getBlue()+"] ");
+			bar = bar.concat(""+getColorAtPos(j).getRed()+","+getColorAtPos(j).getGreen()+","+getColorAtPos(j).getBlue()+" ");
 		}
 		return bar;
 	}
 	
+	//import .lcs into bar data for sequence editing
 	public void importBar(String data) {
-		
+		//todo
 	}
 	
 }

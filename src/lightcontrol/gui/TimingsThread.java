@@ -86,10 +86,11 @@ public class TimingsThread implements Runnable {
 	static double bpm;
 	static double delayTime;
 	
+	public static int currentBar;
 	int currentBeat;
 	int currentHalf;
 	int currentQuarter;
-	int currentEighth;
+	public static int currentEighth;
 	
 	static int numTaps;
 	static double tapTimeout = 3000; // 3 seconds
@@ -104,13 +105,19 @@ public class TimingsThread implements Runnable {
 	}
 
 	public void setBeatIndicators() {
-		//currentBeat = BEAT_4;
-
 		if (-(offset - System.currentTimeMillis()) % (32*delayTime) < delayTime) {
+			
+			if (currentBar == 15) 
+				currentBar = 0;
+			else 
+				currentBar++;
+			
 			currentBeat = BEAT_1;
 			currentHalf = HALF_1;
 			currentQuarter = QUARTER_1;
 			currentEighth = EIGHTH_1;
+			
+			//System.out.println(currentBar*16 + currentEighth);
 		} else if (-(offset - System.currentTimeMillis()) % (32*delayTime) < (2*delayTime)) {
 			currentEighth = EIGHTH_2;
 		} else if (-(offset - System.currentTimeMillis()) % (32*delayTime) < (3*delayTime)) {
@@ -200,6 +207,7 @@ public class TimingsThread implements Runnable {
 			currentEighth = EIGHTH_32;
 		}
 
+		
 		updateButtons();
 		
 	}
@@ -207,7 +215,7 @@ public class TimingsThread implements Runnable {
 	public void run() {
 		
 		long lastTime = System.nanoTime();
-		double amountOfTicks = 40.0;//per second
+		double amountOfTicks = 60.0;//per second
 		double timePerTick = 1000000000/amountOfTicks;
 		double delta = 0;
 		

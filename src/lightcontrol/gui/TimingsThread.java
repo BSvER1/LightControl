@@ -98,26 +98,37 @@ public class TimingsThread implements Runnable {
 	static double avgBPM;
 	static double avgMillis;
 	
+	boolean barTickable = true;
+	
 	
 	public TimingsThread() {
 		System.out.println("Timings thread starting...");
+	}
+	
+	public void tickCurrentBar(int i) {
+		if (i == 1) {
+			barTickable = true;
+			return;
+		}
 		
+		if (barTickable && i == 0) {
+			if (currentBar != 15)
+				currentBar++;
+			else
+				currentBar = 0;
+			
+			barTickable = false;
+		}
 	}
 
 	public void setBeatIndicators() {
 		if (-(offset - System.currentTimeMillis()) % (32*delayTime) < delayTime) {
-			
-			if (currentBar == 15) 
-				currentBar = 0;
-			else 
-				currentBar++;
-			
+			tickCurrentBar(0);
 			currentBeat = BEAT_1;
 			currentHalf = HALF_1;
 			currentQuarter = QUARTER_1;
 			currentEighth = EIGHTH_1;
 			
-			//System.out.println(currentBar*16 + currentEighth);
 		} else if (-(offset - System.currentTimeMillis()) % (32*delayTime) < (2*delayTime)) {
 			currentEighth = EIGHTH_2;
 		} else if (-(offset - System.currentTimeMillis()) % (32*delayTime) < (3*delayTime)) {
@@ -137,6 +148,7 @@ public class TimingsThread implements Runnable {
 		} else if (-(offset - System.currentTimeMillis()) % (32*delayTime) < (8*delayTime)) {
 			currentEighth = EIGHTH_8;
 		} else if (-(offset - System.currentTimeMillis()) % (32*delayTime) < (9*delayTime)) {
+			tickCurrentBar(1);
 			currentBeat = BEAT_2;
 			currentHalf = HALF_3;
 			currentQuarter = QUARTER_5;
@@ -160,6 +172,7 @@ public class TimingsThread implements Runnable {
 		} else if (-(offset - System.currentTimeMillis()) % (32*delayTime) < (16*delayTime)) {
 			currentEighth = EIGHTH_16;
 		} else if (-(offset - System.currentTimeMillis()) % (32*delayTime) < (17*delayTime)) {
+			tickCurrentBar(1);
 			currentBeat = BEAT_3;
 			currentHalf = HALF_5;
 			currentQuarter = QUARTER_9;
@@ -183,6 +196,7 @@ public class TimingsThread implements Runnable {
 		} else if (-(offset - System.currentTimeMillis()) % (32*delayTime) < (24*delayTime)) {
 			currentEighth = EIGHTH_24;
 		} else if (-(offset - System.currentTimeMillis()) % (32*delayTime) < (25*delayTime)) {
+			tickCurrentBar(1);
 			currentBeat = BEAT_4;
 			currentHalf = HALF_7;
 			currentQuarter = QUARTER_13;
@@ -207,7 +221,7 @@ public class TimingsThread implements Runnable {
 			currentEighth = EIGHTH_32;
 		}
 
-		
+		//System.out.println(currentBar*32 + currentEighth);
 		updateButtons();
 		
 	}
@@ -261,6 +275,7 @@ public class TimingsThread implements Runnable {
 	public static void setOffset() {
 		//System.out.println("Resetting first beat position");
 		offset = System.currentTimeMillis();
+		currentBar = 0;
 	}
 	
 	public void updateButtons() {

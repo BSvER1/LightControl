@@ -60,13 +60,14 @@ public class LightControlSequence {
 	
 	/**
 	 * sets the preview window to be the values contained in this sequence at given position
-	 * @param barPos takes "EIGHTH" values from TimingsThread (eighth of a beat, 32nd of a bar)
+	 * @param barPos takes "EIGHTH" values from TimingsThread (eighth of a beat, 32nd of a bar) with bar data included
 	 */
 	public void preview(int barPos) {
 		for (int i = 0; i < channels.size(); i++) {
 			for (int j = 0; j < channels.get(i).hardwareChannels.length; j++) {
-				if (channels.get(i).getColorAtPos(barPos%channels.get(i).notes.size()) != StripColor.DONT_UPDATE.toColor()) {
-					LightControlWindow.getLightData().getStrip(channels.get(i).hardwareChannels[j].getValue()).setStripColor(channels.get(i).getColorAtPos(barPos%channels.get(i).notes.size()));
+				if (!channels.get(i).getColorAtPos((barPos%channels.get(i).notes.size())).equals(StripColor.DONT_UPDATE.toColor())) {
+					//System.out.println(channels.get(i).getColorAtPos(barPos%channels.get(i).notes.size()).toString());
+					LightControlWindow.getLightData().getStrip(channels.get(i).hardwareChannels[j].getValue()).setStripColor(channels.get(i).getColorAtPos((barPos%channels.get(i).notes.size())));
 				}
 			}
 		}

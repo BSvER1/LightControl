@@ -106,7 +106,7 @@ public class InstallationPreviewWindow extends Canvas implements Runnable{
 		
 		//update light data for current sequence then display it
 		if (currentPreview !=null) {
-			currentPreview.preview(TimingsThread.currentEighth + TimingsThread.currentBar*16);
+			currentPreview.preview(TimingsThread.currentEighth + TimingsThread.currentBar*32);
 			//System.out.println(TimingsThread.currentEighth + TimingsThread.currentBar*16);
 		}
 		

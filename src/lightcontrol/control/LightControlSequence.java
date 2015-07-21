@@ -66,7 +66,7 @@ public class LightControlSequence {
 		for (int i = 0; i < channels.size(); i++) {
 			for (int j = 0; j < channels.get(i).hardwareChannels.length; j++) {
 				if (!channels.get(i).getColorAtPos((barPos%channels.get(i).notes.size())).equals(StripColor.DONT_UPDATE.toColor())) {
-					//System.out.println(channels.get(i).getColorAtPos(barPos%channels.get(i).notes.size()).toString());
+					//System.out.println("passing " +barPos +" ["+barPos%channels.get(i).notes.size()+" of "+ channels.get(i).notes.size()+"]");
 					LightControlWindow.getLightData().getStrip(channels.get(i).hardwareChannels[j].getValue()).setStripColor(channels.get(i).getColorAtPos((barPos%channels.get(i).notes.size())));
 				}
 			}

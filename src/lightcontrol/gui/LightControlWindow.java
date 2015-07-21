@@ -63,7 +63,7 @@ public class LightControlWindow {
 	int maxNumStrips = 55;
 	int pxPerCol = 10;
 
-	InstallationPreviewWindow previewCanvas;
+	static InstallationPreviewWindow previewCanvas;
 
 	JFrame frame;
 	public static JTabbedPane viewTabs;
@@ -78,7 +78,9 @@ public class LightControlWindow {
 	JList<String> recentSequencesList;
 	DefaultListModel<String> recentSequences;
 	public static JTextField bpmDisplay;
-	JTextField currentSequenceDisplay, nextSequenceDisplay;
+	static JTextField currentSequenceDisplay;
+
+	JTextField nextSequenceDisplay;
 	JMenuBar menuBar;
 	JMenu file, edit, view, sequence, quantization, help;
 	JMenuItem newSeq, openSeq, saveSeq, importSeq, exit;
@@ -204,8 +206,10 @@ public class LightControlWindow {
 		btnPreviewSequence.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				previewCanvas.setCurrentPreview(performanceSequences.getSequence(recentSequencesList.getSelectedValue()));
+				setSequence(performanceSequences.getSequence(recentSequencesList.getSelectedValue()));
 				
+				//previewCanvas.setCurrentPreview(performanceSequences.getSequence(recentSequencesList.getSelectedValue()));
+				//currentSequenceDisplay.setText(recentSequencesList.getSelectedValue());
 			}
 		});
 		recentListPanel.add(btnPreviewSequence, "cell 2 0,alignx right,growy");
@@ -422,6 +426,8 @@ public class LightControlWindow {
 		file.add(openSeq);
 		file.add(saveSeq);
 		file.addSeparator();
+		file.add(importSeq);
+		file.addSeparator();
 		file.add(exit);
 
 		edit.add(undo);
@@ -479,6 +485,11 @@ public class LightControlWindow {
 		sequencePanel.removeAll();
 		createSequencePanel();
 	}
+	
+	public static void setSequence(LightControlSequence lcs) {
+		previewCanvas.setCurrentPreview(lcs);
+		currentSequenceDisplay.setText(lcs.getFriendlyName());
+	}
 
 	public void setSequencePanelLayout() {
 		//build column format string
@@ -508,7 +519,8 @@ public class LightControlWindow {
 								+ "lighting installations.\n"
 								+ "It uses the LP4J library by Olivier Croisier (olivier.croisier@gmail.com)\n"
 								+ "to interface with a Launchpad to create a simple and easy to use control scheme.\n"
-								+ "Display Layout created using JGoodies and MigLayout and Eclipse WindowBuilder toolkit.\n\n"
+								+ "Display Layout created using JGoodies and MigLayout and Eclipse WindowBuilder toolkit.\n"
+								+ "jSSC (Java Simple Serial Connector) by (scream3r.org@gmail.com) for interfacing with lighting controllers over serial.\n\n"
 								+ "Software written by Brendon Veronese (bsver1@hotmail.com). \n"
 								+ "Hardware designed and built by James Newlands.",
 								"About LightControl",

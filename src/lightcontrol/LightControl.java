@@ -4,7 +4,7 @@ import lightcontrol.gui.LightControlWindow;
 
 public class LightControl {
 
-	public static void main(String[] args) {
+	public static void main2(String[] args) {
 
 		new LightControlWindow();
 

@@ -88,8 +88,8 @@ public class InstallationPreviewWindow extends Canvas implements Runnable{
 				delta = 1.5;
 			}
 			while(delta>=1){
-				if (LightControlWindow.viewTabs.getSelectedComponent().getName() != null 
-						&& LightControlWindow.viewTabs.getSelectedComponent().getName().equals("Launchpad View")) {
+				if (LightControlWindow.getViewTabs().getSelectedComponent().getName() != null 
+						&& LightControlWindow.getViewTabs().getSelectedComponent().getName().equals("Launchpad View")) {
 					render(bs);
 				}
 				delta--;

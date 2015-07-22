@@ -18,9 +18,9 @@ import net.thecodersbreakfast.lp4j.midi.MidiLaunchpad;
 
 public class LaunchpadDriver {
 	
-	public static Launchpad launchpad;
-	public static LaunchpadClient client;
-	public static MyLaunchpadListener listener;
+	private static Launchpad launchpad;
+	private static LaunchpadClient client;
+	private static MyLaunchpadListener listener;
 	
 	TimingsThread tt;
 	Thread timings;
@@ -32,41 +32,36 @@ public class LaunchpadDriver {
 		
 		try {
 			launchpad = new MidiLaunchpad(MidiDeviceConfiguration.autodetect());
-		} catch (MidiUnavailableException e) {
-			System.out.println("Could not connect to launchpad.");
-			return;
-		}
-		
-		try {
 			client = launchpad.getClient();
-		} catch (LaunchpadException ex) {
+			listener = new MyLaunchpadListener(client);
+		    launchpad.setListener(listener);
+		    
+		    client.reset();
+		    
+		    client.testLights(LightIntensity.LOW);
+		    
+		    Thread.sleep(1000);
+		    
+		    client.reset();
+		    
+	        client.setButtonLight(Button.UP, Color.AMBER, BackBufferOperation.NONE);
+	        client.setButtonLight(Button.DOWN, Color.AMBER, BackBufferOperation.NONE);
+	        client.setButtonLight(Button.SESSION, Color.GREEN, BackBufferOperation.NONE);
+	        
+		} catch (MidiUnavailableException e) {
+			System.out.println("Launchpad midi device unreachable.");
+			TimingsThread.setLaunchpadAvailiable(false);
+		} catch (LaunchpadException e) {
 			System.out.println("Could not connect to launchpad.");
-			return;
-		}
-		listener = new MyLaunchpadListener(client);
-	    launchpad.setListener(listener);
-	    
-	    client.reset();
-	    
-	    client.testLights(LightIntensity.LOW);
-	    
-	    try {
-			Thread.sleep(1000);
+			TimingsThread.setLaunchpadAvailiable(false);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//Could not sleep thread. Dont do anything about this.
+		} finally {
+			// launch loop thread
+	        timings.setName("Timings Thread");
+			TimingsThread.setRunning(true);
+			timings.start();
 		}
-	    
-	    client.reset();
-	    
-        client.setButtonLight(Button.UP, Color.AMBER, BackBufferOperation.NONE);
-        client.setButtonLight(Button.DOWN, Color.AMBER, BackBufferOperation.NONE);
-        client.setButtonLight(Button.SESSION, Color.GREEN, BackBufferOperation.NONE);
-
-        // launch loop thread
-        timings.setName("Timings Thread");
-		TimingsThread.setRunning(true);
-		timings.start();
 	}
 
 	public static Launchpad getLaunchpad() {

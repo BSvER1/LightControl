@@ -15,14 +15,14 @@ import lightcontrol.gui.LightControlWindow;
 
 public class SequenceChannelBar {
 
-	final static int MAX_SEGMENTS = 32;
-	final int ROW_OFFSET = 2;
-	final int COL_OFFSET = 3;
+	public final static int MAX_SEGMENTS = 32;
+	private final int ROW_OFFSET = 2;
+	private final int COL_OFFSET = 3;
 	
-	int channelNum;
-	int barNum;
+	private int channelNum;
+	private int barNum;
 	
-	LinkedList<SequenceChannelBarButton> barBtns;
+	private LinkedList<SequenceChannelBarButton> barBtns;
 	
 	public SequenceChannelBar(int channelNum, int barNum) {
 		barBtns = new LinkedList<SequenceChannelBarButton>();
@@ -66,7 +66,7 @@ public class SequenceChannelBar {
 								createButton(btn.getPosition(), btn.getLength()/2, btn.getBackground());
 								createButton(btn.getPosition()+btn.getLength()/2, btn.getLength()/2, btn.getBackground());
 								//remove button
-								LightControlWindow.sequencePanel.remove(btn);
+								LightControlWindow.getSequencePanel().remove(btn);
 								removeFromList(btn);
 
 							}
@@ -78,7 +78,7 @@ public class SequenceChannelBar {
 				}
 				
 				else {
-					btn.setBackground(LightControlWindow.currentColor);
+					btn.setBackground(LightControlWindow.getCurrentColor());
 				}
 			}
 			
@@ -89,7 +89,7 @@ public class SequenceChannelBar {
 		//add buttons to the GUI
 		String layout = "cell "+(btn.getPosition())+" "+(channelNum+ROW_OFFSET)+" "+btn.getLength()+" 1,grow";
 		//System.out.println("Adding button with layout "+layout);
-		LightControlWindow.sequencePanel.add(btn, layout);
+		LightControlWindow.getSequencePanel().add(btn, layout);
 	}
 	
 	private void addToList(SequenceChannelBarButton btn) {
@@ -133,21 +133,5 @@ public class SequenceChannelBar {
 		return bar;
 	}
 	
-	/**
-	 * Take in colour arrays and setup buttons on the GUI.
-	 * @param data
-	 */
-	public void importBar(String[] data) {
-		//take in full array of colours, set buttons up
-		barBtns = new LinkedList<SequenceChannelBarButton>();
-		for (int i = 0; i < data.length; i++) {
-			String[] colData = data[i].split(",");
-			SequenceChannelBarButton btn = new SequenceChannelBarButton(COL_OFFSET+i, 1);
-			btn.setBackground(new Color(Integer.valueOf(colData[0]), Integer.valueOf(colData[1]), Integer.valueOf(colData[2])));
-				
-		}
-		
-		//add bar button
-	}
 	
 }

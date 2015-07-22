@@ -79,6 +79,8 @@ public class TimingsThread implements Runnable {
 	final int EIGHTH_32 = 31;
 	
 	static boolean running;
+	static boolean launchpadAvailiable = true;
+
 	boolean quantized;
 	
 	long start;
@@ -272,7 +274,7 @@ public class TimingsThread implements Runnable {
 		bpm = newBpm;
 		delayTime = 60000/bpm/8;  // 60 seconds to a minute. 8 divisions per beat
 		//System.out.println("Setting bpm to " + bpm + ", thats a delay of "+ delayTime + " per eighth of a beat");
-		LightControlWindow.bpmDisplay.setText(newBpm.toString());
+		LightControlWindow.getBpmDisplay().setText(newBpm.toString());
 	}
 	
 	public static void setOffset() {
@@ -282,14 +284,16 @@ public class TimingsThread implements Runnable {
 	}
 	
 	public void updateButtons() {
-		if (currentBeat == BEAT_1) LaunchpadDriver.client.setButtonLight(Button.VOL, Color.GREEN, BackBufferOperation.NONE);
-		else LaunchpadDriver.client.setButtonLight(Button.VOL, Color.RED, BackBufferOperation.NONE);
-		if (currentBeat == BEAT_2) LaunchpadDriver.client.setButtonLight(Button.PAN, Color.GREEN, BackBufferOperation.NONE);
-		else LaunchpadDriver.client.setButtonLight(Button.PAN, Color.RED, BackBufferOperation.NONE);
-		if (currentBeat == BEAT_3) LaunchpadDriver.client.setButtonLight(Button.SND_A, Color.GREEN, BackBufferOperation.NONE);
-		else LaunchpadDriver.client.setButtonLight(Button.SND_A, Color.RED, BackBufferOperation.NONE);
-		if (currentBeat == BEAT_4) LaunchpadDriver.client.setButtonLight(Button.SND_B, Color.GREEN, BackBufferOperation.NONE);
-		else LaunchpadDriver.client.setButtonLight(Button.SND_B, Color.RED, BackBufferOperation.NONE);
+		if (launchpadAvailiable) {
+			if (currentBeat == BEAT_1) LaunchpadDriver.getClient().setButtonLight(Button.VOL, Color.GREEN, BackBufferOperation.NONE);
+			else LaunchpadDriver.getClient().setButtonLight(Button.VOL, Color.RED, BackBufferOperation.NONE);
+			if (currentBeat == BEAT_2) LaunchpadDriver.getClient().setButtonLight(Button.PAN, Color.GREEN, BackBufferOperation.NONE);
+			else LaunchpadDriver.getClient().setButtonLight(Button.PAN, Color.RED, BackBufferOperation.NONE);
+			if (currentBeat == BEAT_3) LaunchpadDriver.getClient().setButtonLight(Button.SND_A, Color.GREEN, BackBufferOperation.NONE);
+			else LaunchpadDriver.getClient().setButtonLight(Button.SND_A, Color.RED, BackBufferOperation.NONE);
+			if (currentBeat == BEAT_4) LaunchpadDriver.getClient().setButtonLight(Button.SND_B, Color.GREEN, BackBufferOperation.NONE);
+			else LaunchpadDriver.getClient().setButtonLight(Button.SND_B, Color.RED, BackBufferOperation.NONE);
+		}
 	}
 	
 	public static void tapToBPM() {
@@ -316,5 +320,13 @@ public class TimingsThread implements Runnable {
 
 	public static void setRunning(boolean setRunning) {
 		running = setRunning;
+	}
+	
+	public static boolean isLaunchpadAvailiable() {
+		return launchpadAvailiable;
+	}
+
+	public static void setLaunchpadAvailiable(boolean launchpadAvailiable) {
+		TimingsThread.launchpadAvailiable = launchpadAvailiable;
 	}
 }

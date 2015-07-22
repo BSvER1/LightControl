@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -53,49 +54,49 @@ import net.miginfocom.swing.MigLayout;
 
 public class LightControlWindow {
 
-	final JFileChooser fc = new JFileChooser();
+	private final JFileChooser fc = new JFileChooser();
 
-	String version = "pre-alpha 0.3";
+	private String version = "pre-alpha 0.3";
 
-	public static LightDataCenter light;
+	private static LightDataCenter light;
 
-	int numButtonColumns = 256;
-	int maxNumStrips = 55;
-	int pxPerCol = 10;
+	private int numButtonColumns = 256;
+	private int maxNumStrips = 55;
+	private int pxPerCol = 10;
 
-	static InstallationPreviewWindow previewCanvas;
+	private static InstallationPreviewWindow previewCanvas;
 
-	JFrame frame;
-	public static JTabbedPane viewTabs;
-	JSplitPane split_padPreviewRecent, split_recentPreview;
-	JScrollPane recentSequencesListPane, sequenceViewTab;
-	JPanel launchpadViewTab, launchpadPadPanel, recentListPanel, barPreviewPanel, previewPanel;
-	public static JPanel sequencePanel;
+	private JFrame frame;
+	private static JTabbedPane viewTabs;
+	private JSplitPane split_padPreviewRecent, split_recentPreview;
+	private JScrollPane recentSequencesListPane, sequenceViewTab;
+	private JPanel launchpadViewTab, launchpadPadPanel, recentListPanel, barPreviewPanel, previewPanel;
+	private static JPanel sequencePanel;
 
-	JButton[][] launchpadPad;
-	JButton btnPreviewSequence, btnNewStrip;
-	JLabel lblRecentSequences, lblBpm, lblCurrentSequence, lblNextSequence;
-	JList<String> recentSequencesList;
-	DefaultListModel<String> recentSequences;
-	public static JTextField bpmDisplay;
-	static JTextField currentSequenceDisplay;
+	private JButton[][] launchpadPad;
+	private JButton btnPreviewSequence, btnNewStrip;
+	private JLabel lblRecentSequences, lblBpm, lblCurrentSequence, lblNextSequence;
+	private JList<String> recentSequencesList;
+	private DefaultListModel<String> recentSequences;
+	private static JTextField bpmDisplay;
+	private static JTextField currentSequenceDisplay;
 
-	static JTextField nextSequenceDisplay;
-	JMenuBar menuBar;
-	JMenu file, edit, view, sequence, quantization, help;
-	JMenuItem newSeq, openSeq, saveSeq, importSeq, importDir, exit;
-	JMenuItem undo, redo;
-	JMenuItem addBar, removeBar, addChannel;
-	JMenuItem bar, half, quart, eighth, sixteenth;
-	JMenuItem about;
+	private static JTextField nextSequenceDisplay;
+	private JMenuBar menuBar;
+	private JMenu file, edit, view, sequence, quantization, help;
+	private JMenuItem newSeq, openSeq, saveSeq, importSeq, importDir, exit;
+	private JMenuItem undo, redo;
+	private JMenuItem addBar, removeBar, addChannel;
+	private JMenuItem bar, half, quart, eighth, sixteenth;
+	private JMenuItem about;
 
-	JButton[] colorToggle;
-	public static Color currentColor = StripColor.OFF.toColor();
+	private JButton[] colorToggle;
+	private static Color currentColor = StripColor.OFF.toColor();
 
-	LinkedList<SequenceChannel> sequenceViewChannels; // buttons/methods for creating and editing sequences
-	LightControlSequenceList performanceSequences; 
+	private LinkedList<SequenceChannel> sequenceViewChannels; // buttons/methods for creating and editing sequences
+	private LightControlSequenceList performanceSequences; 
 
-	Canvas barPreviewCanvas;
+	private Canvas barPreviewCanvas;
 
 
 	public LightControlWindow() {
@@ -134,7 +135,7 @@ public class LightControlWindow {
 
 	}
 
-	public void initFrame() {
+	private void initFrame() {
 
 		sequenceViewChannels = new LinkedList<SequenceChannel>();
 
@@ -283,7 +284,7 @@ public class LightControlWindow {
 
 	}
 
-	public void addMenuBar() {
+	private void addMenuBar() {
 		menuBar = new JMenuBar();
 
 		file = new JMenu("File");
@@ -483,7 +484,7 @@ public class LightControlWindow {
 		frame.setJMenuBar(menuBar);
 	}
 	
-	public void importDirectoryContents(File dir) {
+	private void importDirectoryContents(File dir) {
 		//try { //uncomment this to use the getCanonicalPath() commands.
 			File[] files = dir.listFiles();
 			for (File file : files) {
@@ -503,7 +504,7 @@ public class LightControlWindow {
 		//}
 	}
 	
-	public void importSequence(File file) {
+	private void importSequence(File file) {
 		if (performanceSequences.getSequence(file.getName().substring(0, file.getName().length()-4)) == null) {
 			performanceSequences.add(new LightControlSequence(file));
 			recentSequences.addElement(performanceSequences.get(performanceSequences.size()-1).getFriendlyName());
@@ -513,7 +514,7 @@ public class LightControlWindow {
 	}
 
 	
-	public void createSequencePanel() {
+	private void createSequencePanel() {
 		sequencePanel = new JPanel();
 		sequencePanel.setBackground(UIManager.getColor("Panel.background"));
 		sequenceViewTab.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -535,7 +536,7 @@ public class LightControlWindow {
 		addColourPalette();
 	}
 	
-	public void resetSequencePanel() {
+	private void resetSequencePanel() {
 		sequencePanel.removeAll();
 		createSequencePanel();
 	}
@@ -562,7 +563,7 @@ public class LightControlWindow {
 		setQueuedSequence(null);
 	}
 
-	public void setSequencePanelLayout() {
+	private void setSequencePanelLayout() {
 		//build column format string
 		String col = "[30px:n:30px][50px:n:50px,center][150px:n:150px,fill]";
 		for (int i = 0; i < numButtonColumns; i++) {
@@ -579,7 +580,7 @@ public class LightControlWindow {
 		sequencePanel.setLayout(new MigLayout("", col, row));
 	}
 
-	public void createAboutDialog() {
+	private void createAboutDialog() {
 		about = new JMenuItem("About LightControl");
 		about.addActionListener(new ActionListener() {
 			@Override
@@ -600,7 +601,7 @@ public class LightControlWindow {
 		});
 	}
 
-	public void addColourPalette() {
+	private void addColourPalette() {
 		String location;
 		colorToggle = new JButton[StripColor.values().length];
 
@@ -624,13 +625,13 @@ public class LightControlWindow {
 		}
 	}
 
-	public void addChannelSequence() {
+	private void addChannelSequence() {
 		if (sequenceViewChannels.size() == maxNumStrips-1) {
 			btnNewStrip.setEnabled(false);
 		}
 
 		sequenceViewChannels.addLast(new SequenceChannel(sequenceViewChannels.size()));
-		sequenceViewChannels.getLast().addBarBtn.revalidate();
+		sequenceViewChannels.getLast().getAddBarBtn().revalidate();
 	}
 
 	public String exportSequence() {
@@ -654,6 +655,22 @@ public class LightControlWindow {
 
 	public static LightDataCenter getLightData() {
 		return light;
+	}
+
+	public static JTabbedPane getViewTabs() {
+		return viewTabs;
+	}
+
+	public static JTextField getBpmDisplay() {
+		return bpmDisplay;
+	}
+
+	public static JPanel getSequencePanel() {
+		return sequencePanel;
+	}
+
+	public static Color getCurrentColor() {
+		return currentColor;
 	}
 
 }

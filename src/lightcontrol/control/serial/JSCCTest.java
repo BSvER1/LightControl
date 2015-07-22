@@ -16,7 +16,8 @@ import jssc.SerialPortException;
 	            serialPort.setParams(SerialPort.BAUDRATE_9600, 
 	                                 SerialPort.DATABITS_8,
 	                                 SerialPort.STOPBITS_1,
-	                                 SerialPort.PARITY_NONE);//Set params. Also you can set params by this string: serialPort.setParams(9600, 8, 1, 0);
+	                                 SerialPort.PARITY_NONE);
+	            //Set params. Also you can set params by this string: serialPort.setParams(9600, 8, 1, 0);
 	            serialPort.addEventListener(new SerialPortEventListener() {
 					@Override
 					public void serialEvent(SerialPortEvent e) {

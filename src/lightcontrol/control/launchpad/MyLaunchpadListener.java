@@ -75,19 +75,25 @@ public class MyLaunchpadListener implements LaunchpadListener {
 
 	@Override
 	public void onButtonReleased(Button button, long timestamp) {
-		
-		if (button != Button.UP && button != Button.DOWN
-				&& button != Button.VOL && button != Button.SESSION && button != Button.PAN
-				&& button != Button.SND_A && button != Button.SND_B) {
-		
+		if (getButtonShouldTurnOff(button)) {
 			client.setButtonLight(button, Color.BLACK, BackBufferOperation.NONE);
 		}
 		
 	}
+	
+	private boolean getButtonShouldTurnOff(Button button) {
+		if (button == Button.UP) return false;
+		if (button == Button.DOWN) return false;
+		if (button == Button.VOL) return false;
+		if (button == Button.SESSION) return false;
+		if (button == Button.PAN) return false;
+		if (button == Button.SND_A) return false;
+		if (button == Button.SND_B) return false;
+		return true;
+	}
 
 	@Override
 	public void onTextScrolled(long timestamp) {
-		// TODO Auto-generated method stub
 		
 	}
 	
@@ -106,7 +112,7 @@ public class MyLaunchpadListener implements LaunchpadListener {
         
         System.out.println("Closing launchpad...");
         try {
-			LaunchpadDriver.launchpad.close();
+			LaunchpadDriver.getLaunchpad().close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} 

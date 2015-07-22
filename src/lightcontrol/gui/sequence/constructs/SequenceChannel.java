@@ -27,17 +27,17 @@ public class SequenceChannel {
 	private final int MAX_BARS = 16;
 	private final int ROW_OFFSET = 2;
 
-	int channelNum; // indicated where the channel falls on the GUI layout not the hardware channel number
-	int numBars = 0;
-	StripID hardwareChannel[];
+	private int channelNum; // indicated where the channel falls on the GUI layout not the hardware channel number
+	private int numBars = 0;
+	private StripID hardwareChannel[];
 
-	JButton deleteChannelBtn;
-	public JButton addBarBtn;
-	JLabel lblStrip;
-	JComboBox<String> stripSelectComboBox;
-	DefaultComboBoxModel<String> stripSelectDropDown;
+	private JButton deleteChannelBtn;
+	private JButton addBarBtn;
+	private JLabel lblStrip;
+	private JComboBox<String> stripSelectComboBox;
+	private DefaultComboBoxModel<String> stripSelectDropDown;
 
-	LinkedList<SequenceChannelBar> sequence;
+	private LinkedList<SequenceChannelBar> sequence;
 
 	public SequenceChannel(int channelNum) {
 		this.channelNum = channelNum;
@@ -61,8 +61,8 @@ public class SequenceChannel {
 					//TODO
 					if (StripGroup.getStripGroup(stripSelectComboBox.getSelectedItem().toString()) != null) {
 						hardwareChannel = StripGroup.getStripGroup(stripSelectComboBox.getSelectedItem().toString()).getStrips();
-					} else if (StripID.S1_2.getStrip(stripSelectComboBox.getSelectedItem().toString()) != null) {
-						hardwareChannel = StripID.S1_2.getStrip(stripSelectComboBox.getSelectedItem().toString());
+					} else if (StripID.getStrip(stripSelectComboBox.getSelectedItem().toString()) != null) {
+						hardwareChannel = StripID.getStrip(stripSelectComboBox.getSelectedItem().toString());
 					} else {
 						hardwareChannel = new StripID[] {};
 						System.err.println("managed to set strip selector to a value not in the groups or strips. set to be an array of length zero.");
@@ -75,7 +75,7 @@ public class SequenceChannel {
 		stripSelectComboBox.setMaximumSize(new Dimension(150, 25));
 		//LightControlWindow.sequencePanel.add(stripSelectComboBox, "flowx,cell 2 2,grow");
 		String locFormat = "flowx,cell 2 "+(channelNum+ROW_OFFSET)+",grow";
-		LightControlWindow.sequencePanel.add(stripSelectComboBox, locFormat);
+		LightControlWindow.getSequencePanel().add(stripSelectComboBox, locFormat);
 	}
 	
 	private void setupDeleteChannelBtn() {
@@ -99,13 +99,13 @@ public class SequenceChannel {
 					for (int j = 0; j < bar.getNumButtons(); j++) {
 						//remove buttons from display
 						bar.getBarButtons().get(j).removeMouseListener(bar.getBarButtons().get(j).getMouseListeners()[0]);
-						LightControlWindow.sequencePanel.remove(bar.getBarButtons().get(j));
+						LightControlWindow.getSequencePanel().remove(bar.getBarButtons().get(j));
 					}
 					
 				}
 				sequence = new LinkedList<SequenceChannelBar>();
 				addBarBtn.removeActionListener(addBarBtn.getActionListeners()[0]);
-				LightControlWindow.sequencePanel.remove(addBarBtn);
+				LightControlWindow.getSequencePanel().remove(addBarBtn);
 				setupFirstBar();
 				setupAddBarButton();
 				
@@ -113,14 +113,14 @@ public class SequenceChannel {
 		});
 		String locFormat = "cell 0 "+(channelNum+ROW_OFFSET)+",alignx center,aligny center";
 		//LightControlWindow.sequencePanel.add(deleteChannelBtn, "cell 0 2,alignx center,aligny center");
-		LightControlWindow.sequencePanel.add(deleteChannelBtn, locFormat);
+		LightControlWindow.getSequencePanel().add(deleteChannelBtn, locFormat);
 	}
 	
 	private void setupLblStrip() {
 		lblStrip = new JLabel("Strip:");
 		String locFormat = "cell 1 "+(channelNum+ROW_OFFSET)+",alignx center,aligny center";
 		//LightControlWindow.sequencePanel.add(lblStrip, "cell 1 2,alignx center,aligny center");
-		LightControlWindow.sequencePanel.add(lblStrip, locFormat);
+		LightControlWindow.getSequencePanel().add(lblStrip, locFormat);
 	}
 	
 	private void setupFirstBar() {
@@ -146,11 +146,11 @@ public class SequenceChannel {
 		});
 		String locFormat = "cell "+(3+BUTTONS_PER_BAR*numBars) + " " + (channelNum+ROW_OFFSET);
 		//sequencePanel.add(addBarBtn, "cell 19 2");
-		LightControlWindow.sequencePanel.add(addBarBtn, locFormat);
+		LightControlWindow.getSequencePanel().add(addBarBtn, locFormat);
 	}
 	
 	private void addBar() {
-		LightControlWindow.sequencePanel.remove(addBarBtn);
+		LightControlWindow.getSequencePanel().remove(addBarBtn);
 		SequenceChannelBar newBar = new SequenceChannelBar(channelNum, numBars);
 		newBar.createButton(3+BUTTONS_PER_BAR*numBars, SequenceChannelBar.MAX_SEGMENTS, StripColor.OFF.toColor());
 		sequence.addLast(newBar);
@@ -204,7 +204,11 @@ public class SequenceChannel {
 	}
 	
 	public void importChannel() {
-		
+		//TODO similar to addBar
+	}
+
+	public JButton getAddBarBtn() {
+		return addBarBtn;
 	}
 
 }

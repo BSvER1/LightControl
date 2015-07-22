@@ -133,9 +133,21 @@ public class SequenceChannelBar {
 		return bar;
 	}
 	
-	//import .lcs into bar data for sequence editing
-	public void importBar(String data) {
-		//todo
+	/**
+	 * Take in colour arrays and setup buttons on the GUI.
+	 * @param data
+	 */
+	public void importBar(String[] data) {
+		//take in full array of colours, set buttons up
+		barBtns = new LinkedList<SequenceChannelBarButton>();
+		for (int i = 0; i < data.length; i++) {
+			String[] colData = data[i].split(",");
+			SequenceChannelBarButton btn = new SequenceChannelBarButton(COL_OFFSET+i, 1);
+			btn.setBackground(new Color(Integer.valueOf(colData[0]), Integer.valueOf(colData[1]), Integer.valueOf(colData[2])));
+				
+		}
+		
+		//add bar button
 	}
 	
 }

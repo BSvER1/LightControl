@@ -29,6 +29,7 @@ public class InstallationPreviewWindow extends Canvas implements Runnable{
 	int yOffset = 15;
 	
 	LightControlSequence currentPreview = null;
+	LightControlSequence queuedSequence = null;
 	
 	
 	public InstallationPreviewWindow() {
@@ -206,8 +207,20 @@ public class InstallationPreviewWindow extends Canvas implements Runnable{
 		
 	}
 	
-	public void setCurrentPreview(LightControlSequence currentPreview) {
+	public void setCurrentSequence(LightControlSequence currentPreview) {
 		this.currentPreview = currentPreview;
+	}
+	
+	public LightControlSequence getCurrentPreview() {
+		return currentPreview;
+	}
+	
+	public void setQueuedSequence(LightControlSequence queue) {
+		queuedSequence = queue;
+	}
+	
+	public LightControlSequence getQueuedSequence() {
+		return queuedSequence;
 	}
 	
 	public static void setRunning(boolean newRunning) {

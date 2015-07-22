@@ -11,8 +11,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 import javax.swing.BoxLayout;
@@ -80,10 +80,10 @@ public class LightControlWindow {
 	public static JTextField bpmDisplay;
 	static JTextField currentSequenceDisplay;
 
-	JTextField nextSequenceDisplay;
+	static JTextField nextSequenceDisplay;
 	JMenuBar menuBar;
 	JMenu file, edit, view, sequence, quantization, help;
-	JMenuItem newSeq, openSeq, saveSeq, importSeq, exit;
+	JMenuItem newSeq, openSeq, saveSeq, importSeq, importDir, exit;
 	JMenuItem undo, redo;
 	JMenuItem addBar, removeBar, addChannel;
 	JMenuItem bar, half, quart, eighth, sixteenth;
@@ -199,14 +199,14 @@ public class LightControlWindow {
 		split_recentPreview.setLeftComponent(recentListPanel);
 		recentListPanel.setLayout(new MigLayout("", "[][][][][grow][grow]", "[][][][][][][][][grow]"));
 
-		lblRecentSequences = new JLabel("Recent Sequences:");
+		lblRecentSequences = new JLabel("Sequences:");
 		recentListPanel.add(lblRecentSequences, "cell 0 0,alignx left,aligny center");
 
-		btnPreviewSequence = new JButton("Preview Sequence");
+		btnPreviewSequence = new JButton("Queue Sequence");
 		btnPreviewSequence.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				setSequence(performanceSequences.getSequence(recentSequencesList.getSelectedValue()));
+				setQueuedSequence(performanceSequences.getSequence(recentSequencesList.getSelectedValue()));
 				
 				//previewCanvas.setCurrentPreview(performanceSequences.getSequence(recentSequencesList.getSelectedValue()));
 				//currentSequenceDisplay.setText(recentSequencesList.getSelectedValue());
@@ -331,9 +331,10 @@ public class LightControlWindow {
 						JOptionPane.showMessageDialog((Component) null, "Need to select a file that ends with \".lcs\"");
 						return;
 					}
-					System.out.println("Selected "+ file.getAbsolutePath());
-					performanceSequences.add(new LightControlSequence(file));
-					recentSequences.addElement(performanceSequences.get(performanceSequences.size()-1).getFriendlyName());
+					//TODO open sequences for editing
+					//System.out.println("Selected "+ file.getAbsolutePath());
+					//performanceSequences.add(new LightControlSequence(file));
+					//recentSequences.addElement(performanceSequences.get(performanceSequences.size()-1).getFriendlyName());
 				}	
 			}
 		});
@@ -353,7 +354,7 @@ public class LightControlWindow {
 					int returnVal = fc.showSaveDialog(saveSeq);
 					if (returnVal == JFileChooser.APPROVE_OPTION) {
 						File file = fc.getSelectedFile();
-						System.out.println("Selected "+ file.getAbsolutePath());
+						//System.out.println("Selected "+ file.getAbsolutePath());
 						if (LightControlFileFilter.getExtension(file).equals(LightControlFileFilter.LightControlSequence)) {
 							PrintWriter out;
 							try {
@@ -379,11 +380,33 @@ public class LightControlWindow {
 				int returnVal = fc.showOpenDialog(importSeq);
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					File file = fc.getSelectedFile();
-					//TODO import directory of files
-					
-					System.out.println("Selected "+ file.getAbsolutePath());
+					if (!LightControlFileFilter.getExtension(file).equals(LightControlFileFilter.LightControlSequence)) {
+						JOptionPane.showMessageDialog((Component) null, "Need to select a file that ends with \".lcs\"");
+						return;
+					}
+					//System.out.println("Selected "+ file.getAbsolutePath());
+					importSequence(file);
 				}
-
+			}
+		});
+		
+		importDir = new JMenuItem("Import all sequences from Directory");
+		importDir.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				int returnVal = fc.showOpenDialog(importDir);
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+					File file = fc.getSelectedFile();
+					//System.out.println("Selected "+ file.getAbsolutePath());
+					if (!file.isDirectory()) {
+						JOptionPane.showMessageDialog((Component) null, "Need to select a directory.");
+						return;
+					}
+					//For all of the files in this directory, add them to the recent list
+					importDirectoryContents(file);
+				}
+				fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			}
 		});
 		
@@ -427,6 +450,7 @@ public class LightControlWindow {
 		file.add(saveSeq);
 		file.addSeparator();
 		file.add(importSeq);
+		file.add(importDir);
 		file.addSeparator();
 		file.add(exit);
 
@@ -459,6 +483,36 @@ public class LightControlWindow {
 		frame.setJMenuBar(menuBar);
 	}
 	
+	public void importDirectoryContents(File dir) {
+		//try { //uncomment this to use the getCanonicalPath() commands.
+			File[] files = dir.listFiles();
+			for (File file : files) {
+				if (file.isDirectory()) {
+					//System.out.println("directory:" + file.getCanonicalPath());
+					importDirectoryContents(file);
+				} else {
+					//System.out.println("     file:" + file.getCanonicalPath());
+					if (LightControlFileFilter.getExtension(file).equals(LightControlFileFilter.LightControlSequence)) {
+						//deal with the .lcs
+						importSequence(file);
+					}
+				}
+			}
+		//} catch (IOException e) {//uncomment this block to use the getCanonicalPath() commands.
+		//	e.printStackTrace();
+		//}
+	}
+	
+	public void importSequence(File file) {
+		if (performanceSequences.getSequence(file.getName().substring(0, file.getName().length()-4)) == null) {
+			performanceSequences.add(new LightControlSequence(file));
+			recentSequences.addElement(performanceSequences.get(performanceSequences.size()-1).getFriendlyName());
+		} else {
+			performanceSequences.overwriteSequence(file);
+		}
+	}
+
+	
 	public void createSequencePanel() {
 		sequencePanel = new JPanel();
 		sequencePanel.setBackground(UIManager.getColor("Panel.background"));
@@ -487,8 +541,25 @@ public class LightControlWindow {
 	}
 	
 	public static void setSequence(LightControlSequence lcs) {
-		previewCanvas.setCurrentPreview(lcs);
+		previewCanvas.setCurrentSequence(lcs);
 		currentSequenceDisplay.setText(lcs.getFriendlyName());
+	}
+	
+	public static void setQueuedSequence(LightControlSequence lcs) {
+		previewCanvas.setQueuedSequence(lcs);
+		if (lcs != null) {
+			nextSequenceDisplay.setText(lcs.getFriendlyName());
+		} else {
+			nextSequenceDisplay.setText("");
+		}
+	}
+	
+	public static void advanceQueuedSequenceToCurrent() {
+		if(previewCanvas.getQueuedSequence() == null) {
+			return;
+		}
+		setSequence(previewCanvas.getQueuedSequence());
+		setQueuedSequence(null);
 	}
 
 	public void setSequencePanelLayout() {

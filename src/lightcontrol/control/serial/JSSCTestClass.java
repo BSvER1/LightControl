@@ -20,9 +20,9 @@ public class JSSCTestClass {
 		s = new SerialPort("/dev/tty.SLAB_USBtoUART");
 		openPort();
 		addListener();
-		sendCommand();
-		sendCommand();
-		sendCommand();
+		//sendCommand();
+		//sendCommand();
+		//sendCommand();
 		
 		closePort();
 	}
@@ -89,7 +89,7 @@ public class JSSCTestClass {
 
 	
 	public boolean sendCommand(byte[] data) {
-		long now;
+		long now = System.currentTimeMillis();
 		try {
 			//packet header
 			//payload
@@ -97,7 +97,7 @@ public class JSSCTestClass {
 			//stop
 			
 			
-			s.writeBytes(packet);
+			s.writeBytes("s".getBytes());
 			ackRecd = false;
 			now = System.currentTimeMillis();
 		} catch (SerialPortException e) {

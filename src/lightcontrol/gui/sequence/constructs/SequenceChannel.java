@@ -202,5 +202,9 @@ public class SequenceChannel {
 			return "";
 		}
 	}
+	
+	public void importChannel() {
+		
+	}
 
 }

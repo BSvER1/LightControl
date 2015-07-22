@@ -7,7 +7,7 @@ import jssc.SerialPortException;
 
 	public class JSCCTest {
 	   
-	    public static void main(String[] args) {
+	    public static void main2(String[] args) {
 	        
 	        SerialPort serialPort = new SerialPort("/dev/tty.SLAB_USBtoUART");
 	        

@@ -117,6 +117,9 @@ public class TimingsThread implements Runnable {
 			else
 				currentBar = 0;
 			
+			// trigger the sequence changing
+			LightControlWindow.advanceQueuedSequenceToCurrent();
+			
 			barTickable = false;
 		}
 	}
@@ -244,7 +247,7 @@ public class TimingsThread implements Runnable {
 			lastTime = now;
 			
 			if (delta > 5) {
-				System.err.println("Dropping main ticks");
+				System.err.println("Dropping timings thread ticks");
 				delta = 1.5;
 			}
 			while(delta>=1){
@@ -267,8 +270,8 @@ public class TimingsThread implements Runnable {
 
 	public static void setBPM(Double newBpm) {
 		bpm = newBpm;
-		delayTime = 60000/bpm/8;
-		System.out.println("Setting bpm to " + bpm + ", thats a delay of "+ delayTime + " per quarter beat");
+		delayTime = 60000/bpm/8;  // 60 seconds to a minute. 8 divisions per beat
+		//System.out.println("Setting bpm to " + bpm + ", thats a delay of "+ delayTime + " per eighth of a beat");
 		LightControlWindow.bpmDisplay.setText(newBpm.toString());
 	}
 	

@@ -1,15 +1,17 @@
 package lightcontrol.control.serial;
 
-import jssc.SerialPort;
-import jssc.SerialPortEvent;
-import jssc.SerialPortEventListener;
-import jssc.SerialPortException;
+import java.nio.ByteBuffer;
 
 	public class JSCCTest {
 	   
-	    public static void main2(String[] args) {
+	    public static void main(String[] args) {
 	        
-	        SerialPort serialPort = new SerialPort("/dev/tty.SLAB_USBtoUART");
+	        JSSCTestClass serial = new JSSCTestClass();
+	        
+	        
+	        
+	    	
+	    	/*SerialPort serialPort = new SerialPort("/dev/tty.SLAB_USBtoUART");
 	        
 	        try {
 	            serialPort.openPort();//Open serial port
@@ -36,7 +38,7 @@ import jssc.SerialPortException;
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
-						/*
+						
 						try {
 							if (serialPort.readBytes(1).equals("s".getBytes())) {
 								System.out.println("S Received!");
@@ -44,7 +46,7 @@ import jssc.SerialPortException;
 						} catch (SerialPortException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
-						}*/
+						}
 						
 					}
 	            });
@@ -71,6 +73,6 @@ import jssc.SerialPortException;
 	        }
 	        catch (SerialPortException ex) {
 	            System.out.println(ex);
-	        }
+	        }*/
 	    }
 	}

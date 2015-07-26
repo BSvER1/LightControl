@@ -6,6 +6,8 @@ import jssc.SerialPort;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
 import jssc.SerialPortException;
+import lightcontrol.control.serial.constructs.Packet;
+import lightcontrol.control.serial.constructs.PacketHeader;
 
 public class JSSCTestClass {
 	
@@ -13,21 +15,29 @@ public class JSSCTestClass {
 	
 	long timeout = 1; // 1ms
 	boolean ackRecd = false;
+	boolean canSend = false;
 	
 	ConcurrentLinkedQueue<Packet> toSend;
 	
 	public JSSCTestClass() {
 		s = new SerialPort("/dev/tty.SLAB_USBtoUART");
+		
+		toSend = new ConcurrentLinkedQueue<Packet>();
+		
 		openPort();
 		addListener();
-		//sendCommand();
-		//sendCommand();
-		//sendCommand();
-		
-		closePort();
 	}
 	
-	public void openPort() {
+	public void sendMessage(Packet packet) {
+		if (canSend) {
+			writePacket(packet);
+		} else {
+			toSend.add(packet);
+		}
+		
+	}
+	
+	private void openPort() {
 		try {
 			s.openPort();
 			s.setParams(SerialPort.BAUDRATE_9600, 
@@ -43,7 +53,7 @@ public class JSSCTestClass {
         
 	}
 	
-	public void addListener() {
+	private void addListener() {
 		try {
 			s.addEventListener(new SerialPortEventListener() {
 				@Override
@@ -52,11 +62,9 @@ public class JSSCTestClass {
 					try {
 						//System.out.println(Byte.valueOf(serialPort.readBytes(1)[0]).toString());
 						byte received_byte = s.readBytes(1)[0];
-						if (received_byte == 115){
+						if (received_byte == PacketHeader.ackPacket) {
 							System.out.println("ACK Received!");
 							ackRecd = true;
-						} else if (received_byte == 116){
-							System.out.println("NAK Received!");
 						}
 						
 					} catch (SerialPortException e1) {
@@ -80,35 +88,21 @@ public class JSSCTestClass {
        
 	}
 	
-	public boolean ackRecd() {
-		//TODO
-		return false;
-		
-	}
-	
-
-	
-	public boolean sendCommand(byte[] data) {
+	private void writePacket(Packet packet) {
 		long now = System.currentTimeMillis();
-		try {
-			//packet header
-			//payload
-			//CRC/parity
-			//stop
+		while (!ackRecd) {
+			try {
+				s.writeBytes(packet.toBytes());
+				ackRecd = false;
+				now = System.currentTimeMillis();
+			} catch (SerialPortException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
-			
-			s.writeBytes("s".getBytes());
-			ackRecd = false;
-			now = System.currentTimeMillis();
-		} catch (SerialPortException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			while(!ackRecd || ((System.currentTimeMillis() - now) > timeout )) {
+				//wait for acknowledgement from listener
+			}
 		}
-		
-		while(!ackRecd || ((System.currentTimeMillis() - now) > timeout )) {
-			//wait for acknowledgement from listener
-		}
-		if (ackRecd) return true;
-		else return false;
 	}
 }

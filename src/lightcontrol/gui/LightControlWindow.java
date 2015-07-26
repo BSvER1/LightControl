@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,7 +11,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.LinkedList;
 
@@ -34,8 +32,10 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.WindowConstants;
 
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
@@ -111,7 +111,7 @@ public class LightControlWindow {
 
 		frame.setResizable(false);
 		frame.setBounds(0, 0, 1500, 900);
-		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		frame.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 		frame.addWindowListener( new WindowAdapter() { 
 			@Override
 			public void windowClosing(WindowEvent e) {
@@ -140,7 +140,7 @@ public class LightControlWindow {
 		sequenceViewChannels = new LinkedList<SequenceChannel>();
 
 		frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.X_AXIS));
-		viewTabs = new JTabbedPane(JTabbedPane.TOP);
+		viewTabs = new JTabbedPane(SwingConstants.TOP);
 		frame.getContentPane().add(viewTabs);
 
 		launchpadViewTab = new JPanel();
@@ -613,6 +613,7 @@ public class LightControlWindow {
 			colorToggle[i].setMaximumSize(new Dimension(25, 25));
 			colorToggle[i].addActionListener(new ActionListener() {
 
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					currentColor = ((JButton) e.getSource()).getBackground();
 					//System.out.println("Colour set to " + currentColor.toString());

@@ -126,7 +126,7 @@ public class SequenceChannel {
 	private void setupFirstBar() {
 		sequence = new LinkedList<SequenceChannelBar>();
 
-		SequenceChannelBar newBar = new SequenceChannelBar(channelNum, numBars);
+		SequenceChannelBar newBar = new SequenceChannelBar(channelNum);
 		newBar.createButton(3, SequenceChannelBar.MAX_SEGMENTS, StripColor.OFF.toColor());
 		sequence.addLast(newBar);
 		//String locFormat = "cell "+(3+i)+" "+(channelNum+ROW_OFFSET)+",alignx center,aligny center";
@@ -151,7 +151,7 @@ public class SequenceChannel {
 	
 	private void addBar() {
 		LightControlWindow.getSequencePanel().remove(addBarBtn);
-		SequenceChannelBar newBar = new SequenceChannelBar(channelNum, numBars);
+		SequenceChannelBar newBar = new SequenceChannelBar(channelNum);
 		newBar.createButton(3+BUTTONS_PER_BAR*numBars, SequenceChannelBar.MAX_SEGMENTS, StripColor.OFF.toColor());
 		sequence.addLast(newBar);
 		

@@ -21,6 +21,7 @@ package net.thecodersbreakfast.lp4j.api;
  *
  * @author Olivier Croisier (olivier.croisier@gmail.com)
  */
+@SuppressWarnings("serial")
 public class LaunchpadException extends RuntimeException {
 
     /**

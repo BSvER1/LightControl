@@ -10,6 +10,7 @@ public class PacketTerminator {
 		return endOfTransmission.toString().getBytes(StandardCharsets.US_ASCII);
 	}
 	
+	@Override
 	public String toString() {
 		return endOfTransmission.toString();
 	}

@@ -1,12 +1,17 @@
 package lightcontrol.gui.preview;
 
+import java.awt.BasicStroke;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.Stroke;
 import java.awt.image.BufferStrategy;
 
 import lightcontrol.control.LightControlSequence;
+import lightcontrol.enums.StripColor;
 import lightcontrol.gui.LightControlWindow;
 import lightcontrol.gui.TimingsThread;
 import lightcontrol.gui.preview.constructs.Edge;
@@ -71,7 +76,7 @@ public class InstallationPreviewWindow extends Canvas implements Runnable{
 		
 		BufferStrategy bs = this.getBufferStrategy();
 		if(bs == null){
-			this.createBufferStrategy(2);
+			this.createBufferStrategy(3);
 			bs = this.getBufferStrategy();
 		}
 		
@@ -102,23 +107,32 @@ public class InstallationPreviewWindow extends Canvas implements Runnable{
 	
 	public void render(BufferStrategy bs) {
 		Graphics g = bs.getDrawGraphics();
-		g.setColor(Color.BLACK); 
-		g.fillRect(0, 0, (int) getBounds().getWidth(), (int) getBounds().getHeight());
+		Graphics2D g2d = (Graphics2D) g;
+		g2d.setColor(Color.BLACK); 
+		g2d.fillRect(0, 0, (int) getBounds().getWidth(), (int) getBounds().getHeight());
 		
 		//update light data for current sequence then display it
 		if (currentPreview !=null) {
 			currentPreview.preview(TimingsThread.currentEighth + TimingsThread.currentBar*32);
 		}
 		
-		for (int i = 0; i<LightControlWindow.getLightData().getNumStrips(); i++) {
-			g.setColor(LightControlWindow.getLightData().getStrip(i).getStripColor());
-			g.drawLine((int) (LightControlWindow.getLightData().getStrip(i).getStart().getLoc().getX()*scale + xOffset), 
-					(int) (LightControlWindow.getLightData().getStrip(i).getStart().getLoc().getY()*scale + yOffset),
-					(int) (LightControlWindow.getLightData().getStrip(i).getStop().getLoc().getX()*scale + xOffset), 
-					(int) (LightControlWindow.getLightData().getStrip(i).getStop().getLoc().getY()*scale + yOffset));
-		}
+		Stroke orig = g2d.getStroke();
+		g2d.setStroke(new BasicStroke(3));
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		
+		for (int i = 0; i<LightControlWindow.getLightData().getNumStrips(); i++) {
+			if (!LightControlWindow.getLightData().getStrip(i).getStripColor().equals(StripColor.OFF.toColor())) {
+				g2d.setColor(LightControlWindow.getLightData().getStrip(i).getStripColor());
+				g2d.drawLine((int) (LightControlWindow.getLightData().getStrip(i).getStart().getLoc().getX()*scale + xOffset), 
+						(int) (LightControlWindow.getLightData().getStrip(i).getStart().getLoc().getY()*scale + yOffset),
+						(int) (LightControlWindow.getLightData().getStrip(i).getStop().getLoc().getX()*scale + xOffset), 
+						(int) (LightControlWindow.getLightData().getStrip(i).getStop().getLoc().getY()*scale + yOffset));
+			}
+		}
+			
+		g2d.setStroke(orig);
 		g.dispose();
+		g2d.dispose();
 		
 		bs.show();
 	}

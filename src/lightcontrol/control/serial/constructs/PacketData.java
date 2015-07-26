@@ -32,7 +32,6 @@ public class PacketData {
 	}
 	
 	public byte[] toBytes() {
-		//TODO
 		return data;
 	}
 	

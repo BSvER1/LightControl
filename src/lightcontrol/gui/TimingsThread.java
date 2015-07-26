@@ -231,6 +231,7 @@ public class TimingsThread implements Runnable {
 		
 	}
 	
+	@Override
 	public void run() {
 		
 		long lastTime = System.nanoTime();

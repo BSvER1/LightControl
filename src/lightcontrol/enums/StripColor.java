@@ -62,7 +62,8 @@ public enum StripColor {
         return r;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return rgb;
     }
     

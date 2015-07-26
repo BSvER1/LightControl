@@ -20,14 +20,14 @@ public class SequenceChannelBar {
 	private final int COL_OFFSET = 3;
 	
 	private int channelNum;
-	private int barNum;
+	//private int barNum;
 	
 	private LinkedList<SequenceChannelBarButton> barBtns;
 	
-	public SequenceChannelBar(int channelNum, int barNum) {
+	public SequenceChannelBar(int channelNum) {//, int barNum) {
 		barBtns = new LinkedList<SequenceChannelBarButton>();
 		this.channelNum = channelNum;
-		this.barNum = barNum;
+		//this.barNum = barNum;
 	}
 
 	public LinkedList<SequenceChannelBarButton> getBarButtons() {

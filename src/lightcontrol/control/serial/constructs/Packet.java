@@ -35,6 +35,11 @@ public abstract class Packet {
 		return null;
 	}
 	
+	public byte[] getCOBSArray() {
+		//TODO
+		return null;
+	}
+	
 	/**
 	 * recursively check to see if this packet contains the same data as the provided packet.
 	 * @param other the packet to compare this packet against.

@@ -1,12 +1,20 @@
 package lightcontrol.control.serial;
 
-import java.nio.ByteBuffer;
-
-	public class JSCCTest {
+public class JSCCTest {
 	   
 	    public static void main(String[] args) {
 	        
-	        JSSCTestClass serial = new JSSCTestClass();
+	        
+	    	
+	    	
+	    	
+	    	
+	    	
+	    	
+	    	
+	    	
+	    	//SerialCommunicator serial = new SerialCommunicator();
+	        
 	        
 	        
 	        

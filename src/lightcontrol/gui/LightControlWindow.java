@@ -44,6 +44,7 @@ import com.jgoodies.forms.layout.RowSpec;
 import lightcontrol.control.LaunchpadDriver;
 import lightcontrol.control.LightControlSequence;
 import lightcontrol.control.LightControlSequenceList;
+import lightcontrol.control.serial.SerialCommunicator;
 import lightcontrol.enums.StripColor;
 import lightcontrol.gui.constructs.LightControlFileFilter;
 import lightcontrol.gui.preview.InstallationPreviewWindow;
@@ -97,6 +98,8 @@ public class LightControlWindow {
 	private LightControlSequenceList performanceSequences; 
 
 	private Canvas barPreviewCanvas;
+	
+	private SerialCommunicator sc;
 
 
 	public LightControlWindow() {
@@ -129,6 +132,7 @@ public class LightControlWindow {
 		initFrame();
 
 		new LaunchpadDriver();
+		sc = new SerialCommunicator();
 
 		previewCanvas.invalidate();
 		menuBar.invalidate();

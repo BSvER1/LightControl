@@ -1,6 +1,5 @@
 package lightcontrol.control.serial;
 
-import java.util.Arrays;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jssc.SerialPort;
@@ -8,7 +7,8 @@ import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
 import jssc.SerialPortException;
 import lightcontrol.control.serial.constructs.Packet;
-import lightcontrol.control.serial.packets.PacketACK;
+import lightcontrol.control.serial.packets.PacketMaxChannels;
+import lightcontrol.control.serial.packets.PacketNOP;
 import lightcontrol.helpers.OsCheck;
 
 public class SerialCommunicator {
@@ -52,6 +52,8 @@ public class SerialCommunicator {
 		addListener();
 		setupConsumer();
 		startConsumer();
+		
+		sendInit();
 	}
 	
 	/**
@@ -87,12 +89,19 @@ public class SerialCommunicator {
 				public void serialEvent(SerialPortEvent e) {
 					//System.out.println("Event received!");
 					try {
+						//TODO
 						//System.out.println(Byte.valueOf(serialPort.readBytes(1)[0]).toString());
-						if (e.getEventType() == SerialPortEvent.RXCHAR && e.getEventValue() >= 5) {
-							byte[] received_bytes = s.readBytes(5);
-							if (Arrays.equals(received_bytes,(new PacketACK()).toBytes())) {
-								System.out.println("ACK Received!");
-								ackRecd = true;
+						if (e.getEventType() == SerialPortEvent.RXCHAR && e.getEventValue() >=1 ) {
+							byte[] received_bytes = s.readBytes(e.getEventValue());
+							
+							for (int i = 0; i < received_bytes.length; i++) {
+								if (received_bytes[i] == (byte) 0x02) {
+									System.out.println("ACK Received!");
+									ackRecd = true;
+								}
+								if (received_bytes[i] == (byte) 0x03) { // command wrong, crc fail, header incorrect, data fucked, etc
+									System.out.println("NAK received");
+								}
 							}
 						}
 						
@@ -125,11 +134,16 @@ public class SerialCommunicator {
 		pC.setRunning(true);
 	}
 	
+	private void sendInit() {
+		sendMessage(new PacketNOP());
+		sendMessage(new PacketMaxChannels(19));
+	}
+	
 	public void writePacket(Packet packet) {
 		long now = System.currentTimeMillis();
 		while (!ackRecd) {
 			try {
-				s.writeBytes(packet.toBytes());
+				s.writeBytes(packet.getFinishedPacket());
 				ackRecd = false;
 				now = System.currentTimeMillis();
 			} catch (SerialPortException e) {}

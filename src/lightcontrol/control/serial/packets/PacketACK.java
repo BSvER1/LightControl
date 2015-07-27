@@ -15,7 +15,7 @@ public class PacketACK extends Packet {
 		data.setDataForAck();
 		PacketPayload payload = new PacketPayload(PacketCommand.ACK, data);
 		
-		init(h, payload, new PacketCRC(h, payload));
+		init(h, payload);
 	}
 
 	

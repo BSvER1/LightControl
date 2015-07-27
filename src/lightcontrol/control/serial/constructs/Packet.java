@@ -1,5 +1,8 @@
 package lightcontrol.control.serial.constructs;
 
+import lightcontrol.helpers.ArrayHelper;
+import lightcontrol.helpers.COBSCodec;
+
 public abstract class Packet {
 	
 	PacketHeader header;
@@ -13,7 +16,7 @@ public abstract class Packet {
 	 * @param crc
 	 */
 	public Packet(PacketHeader header, PacketPayload payload, PacketCRC crc) {
-		init(header, payload, crc);
+		init(header, payload);
 	}
 	
 	/**
@@ -23,21 +26,33 @@ public abstract class Packet {
 		
 	}
 	
-	public void init(PacketHeader header, PacketPayload payload, PacketCRC crc) {
+	/**
+	 * Initialises the packet to be the given header and payload data.
+	 * @param header header packet with type set
+	 * @param payload data formated to be 1 byte of command followed by 4 bytes of data
+	 */
+	public void init(PacketHeader header, PacketPayload payload) {
 		this.header = header;
 		this.payload = payload;
-		this.crc = crc;
+		this.crc = new PacketCRC(header, payload);
 	}
 	
-	public byte[] toBytes() {
-		//TODO
-		System.out.println("Attempting to get bytes out of a packet, but this method is not complete yet!");
-		return null;
+	private byte[] toBytes() {
+		return ArrayHelper.concatAll(header.toBytes(), payload.getCommand().toBytes(), payload.getData().toBytes(), crc.getCRC());
 	}
 	
-	public byte[] getCOBSArray() {
-		//TODO
-		return null;
+	private byte[] getCOBSArray() {
+		return COBSCodec.encode(toBytes());
+	}
+	
+	private byte[] padPacket() {
+		//TODO 
+		System.out.println("Attempting to pad bytes out of a packet, but this method is not complete yet!");
+		return ArrayHelper.concatAll(new byte[] {(byte) 0x00}, getCOBSArray(), new byte[] {(byte) 0x00});
+	}
+	
+	public byte[] getFinishedPacket() {
+		return padPacket();
 	}
 	
 	/**

@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public class PacketData {
 
-	final int MAX_NUM_BYTES = 5;
+	final int MAX_NUM_BYTES = 4;
 	
 	byte[] data; 
 	
@@ -24,7 +24,7 @@ public class PacketData {
 	 * fills all data slots with 0xFF for production of an ACK packet.
 	 */
 	public void setDataForAck() {
-		data = new byte[] {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
+		data = new byte[] {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
 	}
 	
 	public void setData(int pos, byte data) {

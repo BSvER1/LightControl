@@ -67,7 +67,9 @@ public class SerialCommunicator {
 			
 			System.out.println("Opened port successfully");
 			
-		} catch (SerialPortException e) {}
+		} catch (SerialPortException e) {
+			canSend = false;
+		}
 		
         
 	}
@@ -104,6 +106,7 @@ public class SerialCommunicator {
 			});
 		} catch (SerialPortException e) {
 			System.out.println("Could not connect to serial controller.");
+			canSend = false;
 			//e.printStackTrace();
 		}
 	}

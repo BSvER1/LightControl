@@ -561,7 +561,7 @@ public class LightControlWindow {
 	
 	private void setupInitialConfig() {
 		//TODO very temporary stuff here
-		File filename = new File("/Users/BSvER1/111 lcs");
+		File filename = new File("/Users/BSvER1/LCS test shows/pars/");
 		importDirectoryContents(filename);
 		
 		setPadSequence("pars",0,0,7);
@@ -570,7 +570,9 @@ public class LightControlWindow {
 	
 	private void setPadSequence(String name, int bankNum, int x, int y) {
 		launchpadSequence[bankNum][x][y] = name;
-		LaunchpadDriver.getClient().setPadLight(Pad.at(x, y), net.thecodersbreakfast.lp4j.api.Color.YELLOW, BackBufferOperation.NONE);
+		if (LaunchpadDriver.getClient() != null) {
+			LaunchpadDriver.getClient().setPadLight(Pad.at(x, y), net.thecodersbreakfast.lp4j.api.Color.YELLOW, BackBufferOperation.NONE);
+		}
 	}
 	
 	public static void setSequence(LightControlSequence lcs) {

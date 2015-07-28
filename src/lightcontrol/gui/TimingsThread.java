@@ -3,9 +3,11 @@ package lightcontrol.gui;
 
 
 import lightcontrol.control.LaunchpadDriver;
+import lightcontrol.control.launchpad.MyLaunchpadListener;
 import net.thecodersbreakfast.lp4j.api.BackBufferOperation;
 import net.thecodersbreakfast.lp4j.api.Button;
 import net.thecodersbreakfast.lp4j.api.Color;
+import net.thecodersbreakfast.lp4j.api.Pad;
 
 
 public class TimingsThread implements Runnable {
@@ -125,7 +127,7 @@ public class TimingsThread implements Runnable {
 			barTickable = false;
 		}
 	}
-
+	
 	public void setBeatIndicators() {
 		if (-(offset - System.currentTimeMillis()) % (32*delayTime) < delayTime) {
 			tickCurrentBar(0);
@@ -240,7 +242,7 @@ public class TimingsThread implements Runnable {
 		double delta = 0;
 		
 		offset = System.currentTimeMillis();
-		setBPM(120.0);
+		setBPM(80.0);
 
 		while(running) {
 			long now = System.nanoTime();
@@ -295,6 +297,13 @@ public class TimingsThread implements Runnable {
 			if (currentBeat == BEAT_4) LaunchpadDriver.getClient().setButtonLight(Button.SND_B, Color.GREEN, BackBufferOperation.NONE);
 			else LaunchpadDriver.getClient().setButtonLight(Button.SND_B, Color.RED, BackBufferOperation.NONE);
 		}
+		if (MyLaunchpadListener.getPadToTick() != null) {
+			if (currentHalf%2 == 0) {
+				LaunchpadDriver.getClient().setPadLight(MyLaunchpadListener.getPadToTick(), Color.GREEN, BackBufferOperation.NONE);
+			} else {
+				LaunchpadDriver.getClient().setPadLight(MyLaunchpadListener.getPadToTick(), Color.YELLOW, BackBufferOperation.NONE);
+			}
+		}
 	}
 	
 	public static void tapToBPM() {
@@ -312,6 +321,7 @@ public class TimingsThread implements Runnable {
 			//System.out.println(avgBPM);
 			setBPM(avgBPM);
 		}
+		setOffset();
 			
 	}
 	

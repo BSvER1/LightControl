@@ -14,7 +14,7 @@ public class PacketMaxChannels extends Packet {
 		PacketData data = new PacketData();
 		data.setDataForAck();
 		data.setData(1, (byte) numConfigs);
-		PacketPayload payload = new PacketPayload(PacketCommand.ACK, data);
+		PacketPayload payload = new PacketPayload(PacketCommand.MAX_CHANNEL, data);
 		
 		init(h, payload);
 	}

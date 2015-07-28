@@ -17,10 +17,16 @@ public class PacketConsumer implements Runnable {
 	public void performConsumption() {
 		if (comms.getPacketQueue().isEmpty()) {
 			try {
-				Thread.sleep(0,500);
+				Thread.sleep(0,1000);
+				//System.out.println("waiting for packets");
 			} catch (InterruptedException e) {}
 		} else {
+			//System.out.println("writing packet");
 			comms.writePacket(comms.getPacketQueue().poll());
+			if (comms.getPacketQueue().size() > 1000) {
+				comms.getPacketQueue().clear();
+			}
+			
 		}
 	}
 	
@@ -37,7 +43,7 @@ public class PacketConsumer implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		sendTestPacket();
+		//sendTestPacket();
 		
 		while (running) {
 			performConsumption();

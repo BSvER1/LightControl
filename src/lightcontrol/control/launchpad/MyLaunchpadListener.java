@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Random;
 
 import lightcontrol.control.LaunchpadDriver;
+import lightcontrol.control.serial.packets.PacketSet;
 import lightcontrol.enums.StripColor;
 import lightcontrol.gui.LightControlWindow;
 import lightcontrol.gui.TimingsThread;
@@ -23,6 +24,8 @@ public class MyLaunchpadListener implements LaunchpadListener {
 	int stop;
 	String stripString;
 	
+	private static Pad toTick;
+
 	public MyLaunchpadListener(LaunchpadClient client) {
 		this.client = client; 
 		r = new Random();
@@ -31,26 +34,30 @@ public class MyLaunchpadListener implements LaunchpadListener {
 	@Override
 	public void onPadPressed(Pad pad, long timestamp) {
 		System.out.println("Received pad press: "+pad.toString());
-		client.setPadLight(pad, Color.GREEN, BackBufferOperation.NONE);
+		//client.setPadLight(pad, Color.GREEN, BackBufferOperation.NONE);
 		
+		int x = pad.getX();
+		int y = pad.getY();
+		if (LightControlWindow.getLaunchpadSequence(LightControlWindow.getCurrentBank(), x, y) != null) {
+			if (toTick != null) {
+				client.setPadLight(toTick, Color.YELLOW, BackBufferOperation.NONE);
+			}
+			toTick = pad;
 		
-		if (pad == Pad.at(0, 0)) { //random strip random color.
-			start = r.nextInt(10)+1;
-			do {
-				stop = r.nextInt(11)+1;
-			} while (start >= stop);
-			stripString = "" + start + "-"+stop;
-			LightControlWindow.getLightData().getStrip(stripString).setStripColor(StripColor.values()[ r.nextInt(StripColor.values().length-1)+1 ]);
+			LightControlWindow.setQueuedSequence(LightControlWindow.getPerformanceSequences().getSequence(
+					LightControlWindow.getLaunchpadSequence(LightControlWindow.getCurrentBank(), x, y)));
 		}
-			
+				
 		
 	}
 
 	@Override
 	public void onPadReleased(Pad pad, long timestamp) {
-		client.setPadLight(pad, Color.BLACK, BackBufferOperation.NONE);
+		//client.setPadLight(pad, Color.YELLOW, BackBufferOperation.NONE);
 		
-		if (pad == Pad.at(0, 0)) LightControlWindow.getLightData().getStrip(stripString).setStripColor(0, 0, 0);
+		
+		
+		
 	}
 
 	@Override
@@ -120,4 +127,11 @@ public class MyLaunchpadListener implements LaunchpadListener {
         System.out.println("...done");
 	}
 
+	public static Pad getPadToTick() {
+		return toTick;
+	}
+
+	public static void setPadToTick(Pad toTick) {
+		MyLaunchpadListener.toTick = toTick;
+	}
 }

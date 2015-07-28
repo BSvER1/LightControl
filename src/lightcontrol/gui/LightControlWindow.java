@@ -51,6 +51,8 @@ import lightcontrol.gui.preview.InstallationPreviewWindow;
 import lightcontrol.gui.preview.constructs.LightDataCenter;
 import lightcontrol.gui.sequence.constructs.SequenceChannel;
 import net.miginfocom.swing.MigLayout;
+import net.thecodersbreakfast.lp4j.api.BackBufferOperation;
+import net.thecodersbreakfast.lp4j.api.Pad;
 
 
 public class LightControlWindow {
@@ -77,7 +79,7 @@ public class LightControlWindow {
 	private JButton[][] launchpadPad;
 	private JButton btnPreviewSequence, btnNewStrip;
 	private JLabel lblRecentSequences, lblBpm, lblCurrentSequence, lblNextSequence;
-	private JList<String> recentSequencesList;
+	private static JList<String> recentSequencesList;
 	private DefaultListModel<String> recentSequences;
 	private static JTextField bpmDisplay;
 	private static JTextField currentSequenceDisplay;
@@ -95,11 +97,16 @@ public class LightControlWindow {
 	private static Color currentColor = StripColor.OFF.toColor();
 
 	private LinkedList<SequenceChannel> sequenceViewChannels; // buttons/methods for creating and editing sequences
-	private LightControlSequenceList performanceSequences; 
+	private static LightControlSequenceList performanceSequences; 
 
 	private Canvas barPreviewCanvas;
 	
-	private SerialCommunicator sc;
+	public static SerialCommunicator sc;
+	
+	private static String launchpadSequence[][][];
+	private int numSequenceBanks = 1;
+	private static int currentBank = 0;
+	
 
 
 	public LightControlWindow() {
@@ -130,12 +137,15 @@ public class LightControlWindow {
 
 		addMenuBar();
 		initFrame();
+		initPadPreview();
 
 		new LaunchpadDriver();
 		sc = new SerialCommunicator();
 
 		previewCanvas.invalidate();
 		menuBar.invalidate();
+		
+		setupInitialConfig();
 
 	}
 
@@ -155,7 +165,7 @@ public class LightControlWindow {
 
 		split_padPreviewRecent = new JSplitPane();
 		split_padPreviewRecent.setResizeWeight(1.0); // 1.0
-		split_padPreviewRecent.setEnabled(false);
+		split_padPreviewRecent.setEnabled(true);
 		split_padPreviewRecent.setAlignmentY(Component.CENTER_ALIGNMENT);
 		split_padPreviewRecent.setAlignmentX(Component.CENTER_ALIGNMENT);
 		launchpadViewTab.add(split_padPreviewRecent);
@@ -288,6 +298,10 @@ public class LightControlWindow {
 
 	}
 
+	private void initPadPreview() {
+		launchpadSequence = new String[numSequenceBanks][8][8];
+	}
+	
 	private void addMenuBar() {
 		menuBar = new JMenuBar();
 
@@ -360,7 +374,8 @@ public class LightControlWindow {
 					if (returnVal == JFileChooser.APPROVE_OPTION) {
 						File file = fc.getSelectedFile();
 						//System.out.println("Selected "+ file.getAbsolutePath());
-						if (LightControlFileFilter.getExtension(file).equals(LightControlFileFilter.LightControlSequence)) {
+						if (LightControlFileFilter.getExtension(file) != null && 
+								LightControlFileFilter.getExtension(file).equals(LightControlFileFilter.LightControlSequence)) {
 							PrintWriter out;
 							try {
 								out = new PrintWriter(file.getAbsolutePath());
@@ -403,7 +418,7 @@ public class LightControlWindow {
 				int returnVal = fc.showOpenDialog(importDir);
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					File file = fc.getSelectedFile();
-					//System.out.println("Selected "+ file.getAbsolutePath());
+					System.out.println("Selected "+ file.getAbsolutePath());
 					if (!file.isDirectory()) {
 						JOptionPane.showMessageDialog((Component) null, "Need to select a directory.");
 						return;
@@ -517,7 +532,6 @@ public class LightControlWindow {
 		}
 	}
 
-	
 	private void createSequencePanel() {
 		sequencePanel = new JPanel();
 		sequencePanel.setBackground(UIManager.getColor("Panel.background"));
@@ -543,6 +557,20 @@ public class LightControlWindow {
 	private void resetSequencePanel() {
 		sequencePanel.removeAll();
 		createSequencePanel();
+	}
+	
+	private void setupInitialConfig() {
+		//TODO very temporary stuff here
+		File filename = new File("/Users/BSvER1/111 lcs");
+		importDirectoryContents(filename);
+		
+		setPadSequence("pars",0,0,7);
+		setPadSequence("more pars",0,1,7);
+	}
+	
+	private void setPadSequence(String name, int bankNum, int x, int y) {
+		launchpadSequence[bankNum][x][y] = name;
+		LaunchpadDriver.getClient().setPadLight(Pad.at(x, y), net.thecodersbreakfast.lp4j.api.Color.YELLOW, BackBufferOperation.NONE);
 	}
 	
 	public static void setSequence(LightControlSequence lcs) {
@@ -655,6 +683,7 @@ public class LightControlWindow {
 
 		InstallationPreviewWindow.setRunning(false);
 		TimingsThread.setRunning(false);
+		sc.closePort();
 		System.exit(0);
 	}
 
@@ -678,6 +707,27 @@ public class LightControlWindow {
 		return currentColor;
 	}
 
+	public static JList<String> getRecentSequencesList() {
+		return recentSequencesList;
+	}
+
+	public static LightControlSequenceList getPerformanceSequences() {
+		return performanceSequences;
+	}
+
+	
+	public static String getLaunchpadSequence(int bankNum, int x, int y) {
+		return launchpadSequence[bankNum][x][y];
+	}
+
+	public static int getCurrentBank() {
+		return currentBank;
+	}
+
+	public static void setCurrentBank(int currentBank) {
+		LightControlWindow.currentBank = currentBank;
+	}
+	
 }
 
 

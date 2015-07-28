@@ -3,8 +3,8 @@ package lightcontrol.helpers;
 import java.util.zip.Checksum;
 
 public class CRC8 implements Checksum {
-	final int CRC_POLYNOM = 0x9C;
-	final byte CRC_INITIAL = (byte)0xFF;
+	final int CRC_POLYNOM = 0x8C; // 
+	final byte CRC_INITIAL = (byte)0x00;
 
 	private final short init;
 	private final short[] crcTable = new short[256];

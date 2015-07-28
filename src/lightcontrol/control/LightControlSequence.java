@@ -7,6 +7,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import lightcontrol.control.serial.packets.PacketSet;
+import lightcontrol.control.serial.packets.PacketSwitch;
 import lightcontrol.enums.StripColor;
 import lightcontrol.enums.StripID;
 import lightcontrol.gui.LightControlWindow;
@@ -15,6 +17,8 @@ public class LightControlSequence {
 	
 	ArrayList<LightControlChannel> channels;
 	String fileName;
+	
+	int currentBar = -1;
 	
 	public LightControlSequence(File lcs) {
 		channels = new ArrayList<LightControlChannel>();
@@ -67,7 +71,9 @@ public class LightControlSequence {
 			for (int j = 0; j < channels.get(i).hardwareChannels.length; j++) {
 				if (!channels.get(i).getColorAtPos((barPos%channels.get(i).notes.size())).equals(StripColor.DONT_UPDATE.toColor())) {
 					//System.out.println("passing " +barPos +" ["+barPos%channels.get(i).notes.size()+" of "+ channels.get(i).notes.size()+"]");
-					LightControlWindow.getLightData().getStrip(channels.get(i).hardwareChannels[j].getValue()).setStripColor(channels.get(i).getColorAtPos((barPos%channels.get(i).notes.size())));
+					if (LightControlWindow.getLightData().getStrip(channels.get(i).hardwareChannels[j].getValue())!= null) {
+						LightControlWindow.getLightData().getStrip(channels.get(i).hardwareChannels[j].getValue()).setStripColor(channels.get(i).getColorAtPos((barPos%channels.get(i).notes.size())));
+					}
 				}
 			}
 		}
@@ -97,6 +103,24 @@ public class LightControlSequence {
 	 */
 	public void play(int barPos) {
 		//TODO
+		if (barPos != currentBar) {
+			currentBar = barPos;
+
+			//System.out.println("Playing");
+			LightControlWindow.sc.sendMessage(new PacketSwitch(barPos%4));
+			for (int i = 0; i < channels.size(); i++) {
+				for (int j = 0; j < channels.get(i).hardwareChannels.length; j++) {
+					if (!channels.get(i).getColorAtPos(((barPos+1)%channels.get(i).notes.size())).equals(StripColor.DONT_UPDATE.toColor())) {
+						//System.out.println("passing " +barPos +" ["+barPos%channels.get(i).notes.size()+" of "+ channels.get(i).notes.size()+"]");
+						//LightControlWindow.getLightData().getStrip(channels.get(i).hardwareChannels[j].getValue()).setStripColor(channels.get(i).getColorAtPos((barPos%channels.get(i).notes.size())));
+						LightControlWindow.sc.sendMessage(new PacketSet((barPos+1)%4,channels.get(i).hardwareChannels[j].getRedChannel(),channels.get(i).getColorAtPos((barPos+1)%channels.get(i).notes.size()).getRed()));
+						LightControlWindow.sc.sendMessage(new PacketSet((barPos+1)%4,channels.get(i).hardwareChannels[j].getGreenChannel(),channels.get(i).getColorAtPos((barPos+1)%channels.get(i).notes.size()).getGreen()));
+						LightControlWindow.sc.sendMessage(new PacketSet((barPos+1)%4,channels.get(i).hardwareChannels[j].getBlueChannel(),channels.get(i).getColorAtPos((barPos+1)%channels.get(i).notes.size()).getBlue()));
+					}
+				}
+			}
+		}
+		
 	}
 	
 	public void playAndPreview(int barPos) {

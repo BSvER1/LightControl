@@ -20,6 +20,7 @@ public class PacketCRC {
 	public byte[] getCRC() {
 		CRC8 crc8 = new CRC8();
 		crc8.update(getData());
+		//System.out.printf("CRC: 0x%02X \n", crc8.getValue());
 		return new byte[] {(byte) crc8.getValue()};
 	}
 

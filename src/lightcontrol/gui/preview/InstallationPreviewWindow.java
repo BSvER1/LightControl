@@ -113,7 +113,7 @@ public class InstallationPreviewWindow extends Canvas implements Runnable{
 		
 		//update light data for current sequence then display it
 		if (currentPreview !=null) {
-			currentPreview.preview(TimingsThread.currentEighth + TimingsThread.currentBar*32);
+			currentPreview.playAndPreview(TimingsThread.currentEighth + TimingsThread.currentBar*32);
 		}
 		
 		Stroke orig = g2d.getStroke();

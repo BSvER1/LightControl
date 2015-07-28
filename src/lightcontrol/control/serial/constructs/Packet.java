@@ -42,12 +42,24 @@ public abstract class Packet {
 	}
 	
 	private byte[] getCOBSArray() {
-		return COBSCodec.encode(toBytes());
+		byte[] cobsInput = toBytes();
+		//System.out.print("COBS input: ");
+		//for (int i = 0; i < cobsInput.length; i++) {
+		//	System.out.printf("0x%02X ", cobsInput[i]);
+		//}
+		//System.out.println();
+		
+		byte[] cobsOUT = COBSCodec.encode(cobsInput);
+		//System.out.print("COBS output: ");
+		//for (int i = 0; i < cobsOUT.length; i++) {
+		//	System.out.printf("0x%02X ", cobsOUT[i]);
+		//}
+		//System.out.println();
+		
+		return cobsOUT;
 	}
 	
 	private byte[] padPacket() {
-		//TODO 
-		System.out.println("Attempting to pad bytes out of a packet, but this method is not complete yet!");
 		return ArrayHelper.concatAll(new byte[] {(byte) 0x00}, getCOBSArray(), new byte[] {(byte) 0x00});
 	}
 	

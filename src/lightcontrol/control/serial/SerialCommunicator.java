@@ -9,42 +9,27 @@ import jssc.SerialPortException;
 import lightcontrol.control.serial.constructs.Packet;
 import lightcontrol.control.serial.packets.PacketMaxChannels;
 import lightcontrol.control.serial.packets.PacketNOP;
-import lightcontrol.helpers.OsCheck;
+import lightcontrol.control.serial.packets.PacketSet;
+import lightcontrol.control.serial.packets.PacketSwitch;
 
 public class SerialCommunicator {
+	
+	int numChannels = 12;
 	
 	private Thread consumer;
 	private PacketConsumer pC;
 	
 	private SerialPort s;
 	
-	long timeout = 1; // 1ms
+	long timeout = 100; // 1ms
 	boolean ackRecd = false;
 	
 	private ConcurrentLinkedQueue<Packet> toSend;
 	private boolean canSend = false; // used to determine of the serial communicator is availiable.
 	
 	public SerialCommunicator() {
+		System.out.println("Starting serial communicator...");
 		toSend = new ConcurrentLinkedQueue<Packet>();
-		
-		OsCheck.OSType ostype=OsCheck.getOperatingSystemType();
-		switch (ostype) {
-		    case Windows: 
-		    	System.out.println("Serial communications on this OS are not yet supported.");
-		    	return;
-		    	//break;
-		    case MacOS: 
-		    	s = new SerialPort("/dev/tty.SLAB_USBtoUART");
-		    	break;
-		    case Linux: 
-		    	System.out.println("Serial communications on this OS are not yet supported.");
-		    	return;
-		    	//break;
-		    case Other: 
-		    	System.out.println("Serial communications on this OS are not yet supported.");
-		    	return;
-		    	//break;
-		}
 		
 		canSend = true;
 		
@@ -64,6 +49,7 @@ public class SerialCommunicator {
 	public void sendMessage(Packet packet) {
 		if (canSend)
 			toSend.add(packet);
+		//writePacket(packet);
 	}
 	
 	public ConcurrentLinkedQueue<Packet> getPacketQueue() {
@@ -72,13 +58,17 @@ public class SerialCommunicator {
 	
 	private void openPort() {
 		try {
+			s = new SerialPort("/dev/tty.SLAB_USBtoUART");
 			s.openPort();
-			s.setParams(SerialPort.BAUDRATE_9600, 
+			s.setParams(SerialPort.BAUDRATE_115200, 
                     SerialPort.DATABITS_8,
                     SerialPort.STOPBITS_1,
                     SerialPort.PARITY_NONE);
 			
+			System.out.println("Opened port successfully");
+			
 		} catch (SerialPortException e) {}
+		
         
 	}
 	
@@ -93,25 +83,28 @@ public class SerialCommunicator {
 						//System.out.println(Byte.valueOf(serialPort.readBytes(1)[0]).toString());
 						if (e.getEventType() == SerialPortEvent.RXCHAR && e.getEventValue() >=1 ) {
 							byte[] received_bytes = s.readBytes(e.getEventValue());
-							
+							//System.out.print("received: ");
 							for (int i = 0; i < received_bytes.length; i++) {
 								if (received_bytes[i] == (byte) 0x02) {
-									System.out.println("ACK Received!");
+									//System.out.print("ACK Received: ");
 									ackRecd = true;
 								}
 								if (received_bytes[i] == (byte) 0x03) { // command wrong, crc fail, header incorrect, data fucked, etc
-									System.out.println("NAK received");
+									//System.out.print("NAK received ");
 								}
+								//System.out.printf("0x%02X ", received_bytes[i]);
 							}
+							//System.out.println();
 						}
 						
 					} catch (SerialPortException e1) {
-						e1.printStackTrace();
+						//e1.printStackTrace();
 					}
 				}
 			});
 		} catch (SerialPortException e) {
-			e.printStackTrace();
+			System.out.println("Could not connect to serial controller.");
+			//e.printStackTrace();
 		}
 	}
 	
@@ -132,25 +125,62 @@ public class SerialCommunicator {
 	
 	private void startConsumer() {
 		pC.setRunning(true);
+		consumer.start();
 	}
 	
 	private void sendInit() {
+		//System.out.println("sending NOP");
 		sendMessage(new PacketNOP());
-		sendMessage(new PacketMaxChannels(19));
+		//System.out.println("sending set max channels");
+		sendMessage(new PacketMaxChannels(numChannels));
+		sendMessage(new PacketSwitch(0));
+		
+		
+		
+		//sendMessage(new PacketSet(0,5,0));
+		
+		
 	}
 	
 	public void writePacket(Packet packet) {
 		long now = System.currentTimeMillis();
-		while (!ackRecd) {
+		ackRecd = false;
+		//while (!ackRecd) {
+			
+			//System.out.println(Thread.currentThread().getName() + " is sending a packet: " + packet.getClass().getSimpleName());
 			try {
-				s.writeBytes(packet.getFinishedPacket());
+				byte[] toWrite = packet.getFinishedPacket(); 
+				s.writeBytes(toWrite);
+				//System.out.print("sent:" );
+				//for (int i = 0; i < toWrite.length; i++) {
+				//	System.out.printf("0x%02X ", toWrite[i]);
+				//}
+				//System.out.println();
+				
 				ackRecd = false;
 				now = System.currentTimeMillis();
-			} catch (SerialPortException e) {}
-			
-			while(!ackRecd || ((System.currentTimeMillis() - now) > timeout )) {
-				//wait for acknowledgement from listener
+			} catch (SerialPortException e) {
+				System.err.println("serial port exception");
 			}
-		}
+			
+			//while(true) {
+			//	if (ackRecd) {
+			//		break;
+			//	}
+			//	if (System.currentTimeMillis() - now > timeout) {
+			//		break;
+			//	}
+				//wait for acknowledgement from listener
+				//System.out.println("" + ackRecd + (System.currentTimeMillis() - now));
+			//}
+		//}
+		//try {
+		//	Thread.sleep(0,10000);
+		//} catch (InterruptedException e) {
+		//	// TODO Auto-generated catch block
+		//	e.printStackTrace();
+		//}
+		
+		//System.out.println("finished sending packet");
 	}
 }

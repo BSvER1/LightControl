@@ -85,6 +85,7 @@ public class LightControlWindow {
 	private static JTextField currentSequenceDisplay;
 
 	private static JTextField nextSequenceDisplay;
+	private static JTextField laserChannels[];
 	private JMenuBar menuBar;
 	private JMenu file, edit, view, sequence, quantization, help;
 	private JMenuItem newSeq, openSeq, saveSeq, importSeq, importDir, exit;
@@ -107,10 +108,14 @@ public class LightControlWindow {
 	private int numSequenceBanks = 1;
 	private static int currentBank = 0;
 	
+	public static int laserChannelValues[];
+	
 
 
 	public LightControlWindow() {
 
+		laserChannelValues = new int[20];
+		
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException | InstantiationException 
@@ -200,8 +205,24 @@ public class LightControlWindow {
 				launchpadPad[i][j] = new JButton("");
 				launchpadPad[i][j].setEnabled(false);
 				launchpadPad[i][j].setMaximumSize(new Dimension(25,25));
-				launchpadPadPanel.add(launchpadPad[i][j], (""+(i+2)+", "+(j+2)+", fill, fill"));
+				//launchpadPadPanel.add(launchpadPad[i][j], (""+(i+2)+", "+(j+2)+", fill, fill"));
 			}
+		}
+		
+		laserChannels = new JTextField[19];
+		for (int i = 0; i < laserChannels.length; i++) {
+			laserChannels[i] = new JTextField("");
+			laserChannels[i].setName(""+i);
+			laserChannels[i].addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					//TODO
+					
+				}
+				
+			});
+			launchpadPadPanel.add(laserChannels[i], (""+((i%8)+2)+", "+((i/8)+2)+", fill, fill"));
 		}
 
 		split_recentPreview = new JSplitPane();
@@ -408,7 +429,7 @@ public class LightControlWindow {
 					importSequence(file);
 				}
 			}
-		});
+		}); 
 		
 		importDir = new JMenuItem("Import all sequences from Directory");
 		importDir.addActionListener(new ActionListener() {
@@ -564,8 +585,16 @@ public class LightControlWindow {
 		File filename = new File("/Users/BSvER1/LCS test shows/pars/");
 		importDirectoryContents(filename);
 		
+		//TODO add sequences here
 		setPadSequence("pars",0,0,7);
 		setPadSequence("more pars",0,1,7);
+		setPadSequence("police lights",0,2,7);
+		setPadSequence("beast 1",0,3,7);
+		setPadSequence("rainbow",0,4,7);
+		setPadSequence("random",0,5,7);
+		setPadSequence("splay",0,6,7);
+		setPadSequence("strobe part 1",0,4,3);
+		setPadSequence("strobe part 2",0,3,3);
 	}
 	
 	private void setPadSequence(String name, int bankNum, int x, int y) {

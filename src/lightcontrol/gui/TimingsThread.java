@@ -122,7 +122,7 @@ public class TimingsThread implements Runnable {
 				currentBar = 0;
 			
 			// trigger the sequence changing
-			LightControlWindow.advanceQueuedSequenceToCurrent();
+			//LightControlWindow.advanceQueuedSequenceToCurrent();
 			
 			barTickable = false;
 		}
@@ -257,6 +257,10 @@ public class TimingsThread implements Runnable {
 			}
 			while(delta>=1){
 				setBeatIndicators();
+				
+				
+				
+				LightControlWindow.advanceQueuedSequenceToCurrent();
 				delta--;
 			}
 		}

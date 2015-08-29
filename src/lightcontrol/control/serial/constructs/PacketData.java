@@ -36,6 +36,6 @@ public class PacketData {
 	}
 	
 	public boolean equals(PacketData other) {
-		return (!Arrays.equals(data, other.data));
+		return (Arrays.equals(data, other.data));
 	}
 }

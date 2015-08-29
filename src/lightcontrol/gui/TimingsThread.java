@@ -2,12 +2,14 @@ package lightcontrol.gui;
 
 
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import lightcontrol.control.LaunchpadDriver;
 import lightcontrol.control.launchpad.MyLaunchpadListener;
 import net.thecodersbreakfast.lp4j.api.BackBufferOperation;
 import net.thecodersbreakfast.lp4j.api.Button;
 import net.thecodersbreakfast.lp4j.api.Color;
-import net.thecodersbreakfast.lp4j.api.Pad;
 
 
 public class TimingsThread implements Runnable {
@@ -321,9 +323,15 @@ public class TimingsThread implements Runnable {
 			avgMillis = avgMillis * (numTaps-1)/numTaps + (System.currentTimeMillis() - lastTap)/numTaps;
 			lastTap = System.currentTimeMillis();
 			numTaps++;
-			avgBPM = 60000/avgMillis;
+			
+			BigDecimal bd = new BigDecimal(60000/avgMillis);
+		    bd = bd.setScale(2, RoundingMode.HALF_UP);
+			
+			//avgBPM = 60000/avgMillis;
+			
 			//System.out.println(avgBPM);
-			setBPM(avgBPM);
+			//setBPM(avgBPM);
+		    setBPM(bd.doubleValue());
 		}
 		setOffset();
 			
@@ -343,5 +351,13 @@ public class TimingsThread implements Runnable {
 
 	public static void setLaunchpadAvailiable(boolean launchpadAvailiable) {
 		TimingsThread.launchpadAvailiable = launchpadAvailiable;
+	}
+
+	public static double getBpm() {
+		return bpm;
+	}
+
+	public static void setBpm(double bpm) {
+		TimingsThread.bpm = bpm;
 	}
 }

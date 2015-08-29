@@ -73,10 +73,6 @@ public class MyLaunchpadListener implements LaunchpadListener {
 			TimingsThread.setOffset();
 		} else if (button == Button.SESSION) {
 			TimingsThread.tapToBPM();
-		} else if (button == Button.MIXER) {
-			for (int i = 0; i < 5; i++) {
-				LightControlWindow.sc.sendMessage(new PacketSet(0,61,255));
-			}
 		}
 		
 		else {
@@ -89,12 +85,6 @@ public class MyLaunchpadListener implements LaunchpadListener {
 	public void onButtonReleased(Button button, long timestamp) {
 		if (getButtonShouldTurnOff(button)) {
 			client.setButtonLight(button, Color.BLACK, BackBufferOperation.NONE);
-		}
-		
-		if (button == Button.MIXER) {
-			for (int i = 0; i < 5; i++) {
-				LightControlWindow.sc.sendMessage(new PacketSet(0,61,0));
-			}
 		}
 		
 	}

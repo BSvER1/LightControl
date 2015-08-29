@@ -35,6 +35,7 @@ public class SerialCommunicator {
 		
 		openPort();
 		addListener();
+		
 		setupConsumer();
 		startConsumer();
 		
@@ -47,9 +48,9 @@ public class SerialCommunicator {
 	 * @param packet the packet to send.
 	 */
 	public void sendMessage(Packet packet) {
-		if (canSend)
-			toSend.add(packet);
-		//writePacket(packet);
+		//if (canSend)
+		//	toSend.add(packet);
+		writePacket(packet);
 	}
 	
 	public ConcurrentLinkedQueue<Packet> getPacketQueue() {
@@ -70,6 +71,7 @@ public class SerialCommunicator {
 		} catch (SerialPortException e) {
 			canSend = false;
 		}
+		
 		
         
 	}
@@ -114,7 +116,7 @@ public class SerialCommunicator {
 	public void closePort() {
 		pC.setRunning(false);
 		try {
-			s.purgePort(SerialPort.PURGE_RXCLEAR | SerialPort.PURGE_TXCLEAR);
+			s.purgePort(SerialPort.PURGE_RXCLEAR + SerialPort.PURGE_TXCLEAR);
 			s.closePort();//Close serial port
 		} catch (SerialPortException e) {}
        
@@ -135,7 +137,7 @@ public class SerialCommunicator {
 		//System.out.println("sending NOP");
 		sendMessage(new PacketNOP());
 		//System.out.println("sending set max channels");
-		sendMessage(new PacketMaxChannels(numChannels));
+		//sendMessage(new PacketMaxChannels(numChannels));
 		sendMessage(new PacketSwitch(0));
 		
 		
@@ -152,8 +154,8 @@ public class SerialCommunicator {
 			
 			//System.out.println(Thread.currentThread().getName() + " is sending a packet: " + packet.getClass().getSimpleName());
 			try {
-				byte[] toWrite = packet.getFinishedPacket(); 
-				s.writeBytes(toWrite);
+				//byte[] toWrite = packet.getFinishedPacket(); 
+				s.writeBytes(packet.getFinishedPacket());
 				//System.out.print("sent:" );
 				//for (int i = 0; i < toWrite.length; i++) {
 				//	System.out.printf("0x%02X ", toWrite[i]);

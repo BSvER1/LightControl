@@ -23,10 +23,6 @@ public class PacketConsumer implements Runnable {
 		} else {
 			//System.out.println("writing packet");
 			comms.writePacket(comms.getPacketQueue().poll());
-			if (comms.getPacketQueue().size() > 1000) {
-				comms.getPacketQueue().clear();
-			}
-			
 		}
 	}
 	
@@ -39,10 +35,7 @@ public class PacketConsumer implements Runnable {
 	public void run() {
 		try {
 			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} catch (InterruptedException e) {}
 		//sendTestPacket();
 		
 		while (running) {

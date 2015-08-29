@@ -25,10 +25,6 @@ public class PacketCRC {
 	}
 
 	public boolean equals(PacketCRC other) {
-		//if (!header.equals(other.header)) return false;
-		//if (!data.equals(other.data)) return false;
-		if (!(getCRC() == other.getCRC())) return false;
-		//if (!Arrays.equals(getCRC(), other.getCRC())) return false; //should always be true if the others dont fire. possibly duplicated.
-		return true;
+		return (getCRC() == other.getCRC());
 	}
 }

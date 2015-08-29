@@ -25,4 +25,10 @@ public class PacketSwitch extends Packet {
 		
 		init(h, payload);
 	}
+	
+	public void setConfigData(int config) {
+		payload.getData().setData(0, (byte) config);
+		
+		reverifyPacket();
+	}
 }

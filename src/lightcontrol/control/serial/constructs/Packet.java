@@ -5,9 +5,11 @@ import lightcontrol.helpers.COBSCodec;
 
 public abstract class Packet {
 	
-	PacketHeader header;
-	PacketPayload payload;
-	PacketCRC crc;
+	public PacketHeader header;
+	public PacketPayload payload;
+	public PacketCRC crc;
+	
+	byte[] pad = {(byte) 0x00};
 	
 	/**
 	 * constructs the packet with defined data.
@@ -15,7 +17,7 @@ public abstract class Packet {
 	 * @param payload
 	 * @param crc
 	 */
-	public Packet(PacketHeader header, PacketPayload payload, PacketCRC crc) {
+	public Packet(PacketHeader header, PacketPayload payload) {
 		init(header, payload);
 	}
 	
@@ -42,25 +44,25 @@ public abstract class Packet {
 	}
 	
 	private byte[] getCOBSArray() {
-		byte[] cobsInput = toBytes();
+		//byte[] cobsInput = toBytes();
 		//System.out.print("COBS input: ");
 		//for (int i = 0; i < cobsInput.length; i++) {
 		//	System.out.printf("0x%02X ", cobsInput[i]);
 		//}
 		//System.out.println();
 		
-		byte[] cobsOUT = COBSCodec.encode(cobsInput);
+		//byte[] cobsOUT = COBSCodec.encode(toBytes());
 		//System.out.print("COBS output: ");
 		//for (int i = 0; i < cobsOUT.length; i++) {
 		//	System.out.printf("0x%02X ", cobsOUT[i]);
 		//}
 		//System.out.println();
 		
-		return cobsOUT;
+		return COBSCodec.encode(toBytes());
 	}
 	
 	private byte[] padPacket() {
-		return ArrayHelper.concatAll(new byte[] {(byte) 0x00}, getCOBSArray(), new byte[] {(byte) 0x00});
+		return ArrayHelper.concatAll(pad, getCOBSArray(), pad);
 	}
 	
 	public byte[] getFinishedPacket() {
@@ -77,6 +79,10 @@ public abstract class Packet {
 		if (!payload.equals(other.payload)) return false;
 		if (!crc.equals(other.crc)) return false;
 		return true;
+	}
+	
+	public void reverifyPacket() {
+		crc = new PacketCRC(header, payload);
 	}
 	
 }

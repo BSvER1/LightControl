@@ -16,8 +16,8 @@ public class PacketSet extends Packet {
 		if (config < 0 || config > MAX_CONFIGS) {
 			throw new IllegalArgumentException("config must be between 0 and "+MAX_CONFIGS);
 		}
-		if (channel < 0 || channel > MAX_CHANNELS) {
-			throw new IllegalArgumentException("channel must be between 0 and "+ MAX_CHANNELS);
+		if (channel < 1 || channel > MAX_CHANNELS) {
+			throw new IllegalArgumentException("channel must be between 1 and "+ MAX_CHANNELS);
 		}
 		
 		PacketHeader h = new PacketHeader(PacketHeader.commandPacket);
@@ -31,5 +31,20 @@ public class PacketSet extends Packet {
 		PacketPayload payload = new PacketPayload(PacketCommand.SET, data);
 		
 		init(h, payload);
+	}
+	
+	public void updateData(int config, int channel, int value) {
+		if (config < 0 || config > MAX_CONFIGS) {
+			throw new IllegalArgumentException("config must be between 0 and "+MAX_CONFIGS);
+		}
+		if (channel < 1 || channel > MAX_CHANNELS) {
+			throw new IllegalArgumentException("channel must be between 1 and "+ MAX_CHANNELS);
+		}
+		
+		payload.getData().setData(0, (byte) config);
+		payload.getData().setData(1, (byte) channel);
+		payload.getData().setData(2, (byte) value);
+		
+		reverifyPacket();
 	}
 }

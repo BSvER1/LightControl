@@ -93,10 +93,11 @@ public class InstallationPreviewWindow extends Canvas implements Runnable{
 				delta = 1.5;
 			}
 			while(delta>=1){
-				if (LightControlWindow.getViewTabs().getSelectedComponent().getName() != null 
-						&& LightControlWindow.getViewTabs().getSelectedComponent().getName().equals("Launchpad View")) {
+				if (currentPreview !=null) {
 					render(bs);
+					currentPreview.play(TimingsThread.currentEighth + TimingsThread.currentBar*32);
 				}
+				
 				delta--;
 			}
 			
@@ -112,8 +113,10 @@ public class InstallationPreviewWindow extends Canvas implements Runnable{
 		g2d.fillRect(0, 0, (int) getBounds().getWidth(), (int) getBounds().getHeight());
 		
 		//update light data for current sequence then display it
-		if (currentPreview !=null) {
-			currentPreview.playAndPreview(TimingsThread.currentEighth + TimingsThread.currentBar*32);
+		
+		if (LightControlWindow.getViewTabs().getSelectedComponent().getName() != null 
+				&& LightControlWindow.getViewTabs().getSelectedComponent().getName().equals("Launchpad View")) {
+			currentPreview.preview(TimingsThread.currentEighth + TimingsThread.currentBar*32);
 		}
 		
 		Stroke orig = g2d.getStroke();

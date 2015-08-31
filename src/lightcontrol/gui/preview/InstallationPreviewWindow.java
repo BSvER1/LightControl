@@ -107,17 +107,18 @@ public class InstallationPreviewWindow extends Canvas implements Runnable{
 	}
 	
 	public void render(BufferStrategy bs) {
+		if (!(LightControlWindow.getViewTabs().getSelectedComponent().getName() != null 
+				&& LightControlWindow.getViewTabs().getSelectedComponent().getName().equals("Launchpad View"))) {
+			return;
+		}
+		
 		Graphics g = bs.getDrawGraphics();
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setColor(Color.BLACK); 
 		g2d.fillRect(0, 0, (int) getBounds().getWidth(), (int) getBounds().getHeight());
 		
 		//update light data for current sequence then display it
-		
-		if (LightControlWindow.getViewTabs().getSelectedComponent().getName() != null 
-				&& LightControlWindow.getViewTabs().getSelectedComponent().getName().equals("Launchpad View")) {
-			currentPreview.preview(TimingsThread.currentEighth + TimingsThread.currentBar*32);
-		}
+		currentPreview.preview(TimingsThread.currentEighth + TimingsThread.currentBar*32);
 		
 		Stroke orig = g2d.getStroke();
 		g2d.setStroke(new BasicStroke(3));

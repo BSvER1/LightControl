@@ -59,7 +59,7 @@ public class LightControlWindow {
 
 	private final JFileChooser fc = new JFileChooser();
 
-	private String version = "pre-alpha 0.3";
+	private String version = "pre-alpha 0.5";
 
 	private static LightDataCenter light;
 
@@ -68,6 +68,7 @@ public class LightControlWindow {
 	private int pxPerCol = 10;
 
 	private static InstallationPreviewWindow previewCanvas;
+	private static LaserControlTab laserTab;
 
 	private JFrame frame;
 	private static JTabbedPane viewTabs;
@@ -85,7 +86,6 @@ public class LightControlWindow {
 	private static JTextField currentSequenceDisplay;
 
 	private static JTextField nextSequenceDisplay;
-	private static JTextField laserChannels[];
 	private JMenuBar menuBar;
 	private JMenu file, edit, view, sequence, quantization, help;
 	private JMenuItem newSeq, openSeq, saveSeq, importSeq, importDir, exit;
@@ -108,13 +108,10 @@ public class LightControlWindow {
 	private int numSequenceBanks = 1;
 	private static int currentBank = 0;
 	
-	public static int laserChannelValues[];
 	
 
 
 	public LightControlWindow() {
-
-		laserChannelValues = new int[20];
 		
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -167,6 +164,10 @@ public class LightControlWindow {
 		launchpadViewTab.setName("Launchpad View");
 		viewTabs.setSelectedComponent(launchpadViewTab);
 		launchpadViewTab.setLayout(new BoxLayout(launchpadViewTab, BoxLayout.X_AXIS));
+		
+		laserTab = new LaserControlTab();
+		laserTab.setName("Laser Control");
+		viewTabs.addTab("Laser Control", null, laserTab, null);
 
 		split_padPreviewRecent = new JSplitPane();
 		split_padPreviewRecent.setResizeWeight(1.0); // 1.0
@@ -205,24 +206,8 @@ public class LightControlWindow {
 				launchpadPad[i][j] = new JButton("");
 				launchpadPad[i][j].setEnabled(false);
 				launchpadPad[i][j].setMaximumSize(new Dimension(25,25));
-				//launchpadPadPanel.add(launchpadPad[i][j], (""+(i+2)+", "+(j+2)+", fill, fill"));
+				launchpadPadPanel.add(launchpadPad[i][j], (""+(i+2)+", "+(j+2)+", fill, fill"));
 			}
-		}
-		
-		laserChannels = new JTextField[19];
-		for (int i = 0; i < laserChannels.length; i++) {
-			laserChannels[i] = new JTextField("");
-			laserChannels[i].setName(""+i);
-			laserChannels[i].addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					//TODO
-					
-				}
-				
-			});
-			launchpadPadPanel.add(laserChannels[i], (""+((i%8)+2)+", "+((i/8)+2)+", fill, fill"));
 		}
 
 		split_recentPreview = new JSplitPane();

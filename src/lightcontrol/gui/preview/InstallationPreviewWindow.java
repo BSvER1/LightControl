@@ -11,7 +11,10 @@ import java.awt.Stroke;
 import java.awt.image.BufferStrategy;
 
 import lightcontrol.control.LightControlSequence;
+import lightcontrol.control.serial.packets.PacketSet;
+import lightcontrol.control.serial.packets.PacketSwitch;
 import lightcontrol.enums.StripColor;
+import lightcontrol.gui.LaserControlTab;
 import lightcontrol.gui.LightControlWindow;
 import lightcontrol.gui.TimingsThread;
 import lightcontrol.gui.preview.constructs.Edge;
@@ -36,8 +39,20 @@ public class InstallationPreviewWindow extends Canvas implements Runnable{
 	LightControlSequence currentPreview = null;
 	LightControlSequence queuedSequence = null;
 	
+	static int numBars;
+	static int barTimeout = 3000; // 3 seconds
+	static long lastBarTime, secLastTap;
+	static double avgTime = 0;
+	static double avgMillis;
+	
+	PacketSet toSend;
+	PacketSwitch newCfg;
+	
 	
 	public InstallationPreviewWindow() {
+		
+		toSend = new PacketSet(0,1,0);
+		newCfg = new PacketSwitch(0);
 		
 		setSize(500,500);
 		setMaximumSize(new Dimension(500,500));
@@ -93,7 +108,11 @@ public class InstallationPreviewWindow extends Canvas implements Runnable{
 				delta = 1.5;
 			}
 			while(delta>=1){
-				if (currentPreview !=null) {
+				if (LightControlWindow.getViewTabs().getSelectedComponent().getName() != null 
+						&& LightControlWindow.getViewTabs().getSelectedComponent().getName().equals("Laser Control")) {
+					//System.out.println("running laser");
+					runLaser();
+				} else if (currentPreview !=null) {
 					render(bs);
 					currentPreview.play(TimingsThread.currentEighth + TimingsThread.currentBar*32);
 				}
@@ -139,6 +158,40 @@ public class InstallationPreviewWindow extends Canvas implements Runnable{
 		g2d.dispose();
 		
 		bs.show();
+	}
+	
+	private void runLaser() {
+		if (!(LightControlWindow.getViewTabs().getSelectedComponent().getName() != null 
+				&& LightControlWindow.getViewTabs().getSelectedComponent().getName().equals("Laser Control"))) {
+			return;
+		}
+		
+		calcTime();
+		
+		if (avgTime < 2.65) { // set to avgTime for 150 bpm
+			return;
+		}
+		
+		newCfg.setConfigData(0);
+		LightControlWindow.sc.sendMessage(newCfg);
+		
+		for (int i = 0; i < 19; i++) {
+			calcTime();
+			toSend.updateData(0, i+1, LaserControlTab.getSlider(i).getValue());
+			LightControlWindow.sc.sendMessage(toSend);
+		}		
+	}
+	
+	private void calcTime() {
+		if (System.currentTimeMillis()-lastBarTime > barTimeout) {
+			lastBarTime = System.currentTimeMillis();
+			numBars = 1;
+		} else if (numBars > 600) {
+			numBars = 600;
+		}
+		avgTime = ((numBars-1) * avgTime + (System.currentTimeMillis() - lastBarTime))/numBars;
+		lastBarTime = System.currentTimeMillis();
+		numBars++;
 	}
 	
 	public void setupStrips() {

@@ -354,6 +354,7 @@ public class LightControlWindow {
 					File file = fc.getSelectedFile();
 					if (!LightControlFileFilter.getExtension(file).equals(LightControlFileFilter.LightControlSequence)) {
 						JOptionPane.showMessageDialog((Component) null, "Need to select a file that ends with \".lcs\"");
+						System.out.println("Opening successfully");
 						return;
 					}
 					//TODO open sequences for editing

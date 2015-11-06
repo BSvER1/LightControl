@@ -20,5 +20,10 @@
 	<classpathentry kind="lib" path="jssc-2.8.0-javadoc.jar"/>
 	<classpathentry kind="lib" path="jssc.jar" sourcepath="jssc-2.8.0-src.jar"/>
 	<classpathentry kind="lib" path="jssc-2.8.0-src.jar"/>
+	<classpathentry kind="lib" path="commons-math3-3.5.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/LightControl/commons-math3-3.5-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -193,11 +193,11 @@ public enum StripID {
 	}
 	
 	public Integer getGreenChannel() {
-		return rgbStartChannel+1;
+		return rgbStartChannel+2;
 	}
 	
 	public Integer getBlueChannel() {
-		return rgbStartChannel+2;
+		return rgbStartChannel+1;
 	}
 	
 	

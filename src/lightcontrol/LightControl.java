@@ -1,5 +1,6 @@
 package lightcontrol;
 
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -10,9 +11,9 @@ public class LightControl {
 	public static void main(String[] args) {
 
 		try {
-			System.setProperty("apple.laf.useScreenMenuBar", "true");
-			System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Test");
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			System.setProperty("apple.laf.useScreenMenuBar", "true");
+			System.setProperty("com.apple.mrj.application.apple.menu.about.name", "LightControl");
 		}
 		catch(ClassNotFoundException e) {
 			System.out.println("ClassNotFoundException: " + e.getMessage());
@@ -26,7 +27,7 @@ public class LightControl {
 		catch(UnsupportedLookAndFeelException e) {
 			System.out.println("UnsupportedLookAndFeelException: " + e.getMessage());
 		}
-		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				new LightControlWindow();
 			}
